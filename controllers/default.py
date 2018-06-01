@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 def index():
-    response.flash = T("Hello World")
-    return dict(message=T('Welcome to web2py!'))
+    if not auth.user : redirect(URL('login_register'))
+    return dict()
+
+def login_register():
+    return dict()
 
 @auth.requires_login()
 def api_get_user_email():

@@ -15,22 +15,37 @@
     <script src="{{=URL('static','js/modernizr-2.8.3.min.js')}}"></script>
     <script src="{{=URL('static', 'js/vue.js')}}"></script>
     {{include 'web2py_ajax.html'}}
-    
     {{block head}}
     {{end head}}
   </head>
   <body>
-    {{block header}}
-    {{end header}}
-
-    {{block main}}
-    {{end main}}
-
-    {{block footer}}
-    {{end footer}}
-
     {{include}}
-
+    <header>
+      <div class="container middle max900">
+        <div class="fill middle">
+          <label class="ham padded fa fa-bars" for="menu"></label>
+          <div class="burger accordion">
+            <input type="checkbox" id="menu"/>
+            {{=MENU(response.menu,_class='menu')}}
+            <ul class="menu right">
+              <li>
+                {{=auth.navbar(mode='dropdown')}}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      {{block header}}
+      {{end header}}
+    </header>
+    <main>
+      {{block main}}
+      {{end main}}
+    </main>
+    <footer>
+      {{block footer}}
+      {{end footer}}
+    </footer>
     <script src="{{=URL('static','js/marked.min.js')}}"></script>
     <script src="{{=URL('static','js/vue.min.js')}}"></script>
     <script>

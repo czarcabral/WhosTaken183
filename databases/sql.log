@@ -108,3 +108,47 @@ CREATE TABLE "web2py_session_fresh_application"(
     "session_data" BLOB
 );
 success!
+timestamp: 2018-05-21T21:13:52.397300
+CREATE TABLE "web2py_session_EZOrg"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "locked" CHAR(1),
+    "client_ip" CHAR(64),
+    "created_datetime" TIMESTAMP,
+    "modified_datetime" TIMESTAMP,
+    "unique_key" CHAR(64),
+    "session_data" BLOB
+);
+success!
+timestamp: 2018-05-31T00:33:44.559278
+CREATE TABLE "groups"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "group_id" CHAR(512),
+    "group_name" CHAR(512)
+);
+success!
+timestamp: 2018-05-31T00:33:44.565065
+CREATE TABLE "memberships"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "student_id" CHAR(512),
+    "group_id" CHAR(512),
+    "is_admin" CHAR(512)
+);
+success!
+timestamp: 2018-05-31T00:33:44.569199
+CREATE TABLE "classes"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "class_id" CHAR(512),
+    "class_name" CHAR(512)
+);
+success!
+timestamp: 2018-05-31T00:33:44.573347
+CREATE TABLE "enrollments"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "student_id" CHAR(512),
+    "class_id" CHAR(512),
+    "quarter" CHAR(512),
+    "grade" CHAR(512),
+    "is_class_public" CHAR(512),
+    "is_grade_public" CHAR(512)
+);
+success!
