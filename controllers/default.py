@@ -4,6 +4,9 @@ def index():
     if not auth.user : redirect(URL('user'))
     return dict()
 
+def profile():
+    return dict()
+
 def user():
     if request.args(0) == 'register' :
         db.auth_user.bio.writable = False

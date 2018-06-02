@@ -1,23 +1,16 @@
 # -*- coding: utf-8 -*-
 
-# db.define_table('auth_table',
-#     Field('id'), # student id
-#     Field('first_name'),
-#     Field('last_name'),
-#     Field('email'),
-#     Field('bio'),
-#     Field('is_public'),
-# )
+def get_auth_user():
+    return auth.user.id if auth.user else None
 
 db.define_table('groups',
-    Field('group_id'),
     Field('group_name'),
 )
 
 db.define_table('memberships',
-    Field('student_id'),
-    Field('group_id'),
-    Field('is_admin'),
+    Field('student_id', type='integer'),
+    Field('group_id', type='integer'),
+    Field('is_admin', type='boolean'),
 )
 
 db.define_table('classes',
@@ -27,10 +20,10 @@ db.define_table('classes',
 )
 
 db.define_table('enrollments',
-    Field('student_id'),
+    Field('student_id', type='integer', default=get_auth_user()),
     Field('class_id'),
     Field('quarter'),
     Field('grade'),
-    Field('is_class_public'),
-    Field('is_grade_public'),
+    Field('is_class_public', type='boolean', default=True),
+    Field('is_grade_public', type='boolean', default=True),
 )

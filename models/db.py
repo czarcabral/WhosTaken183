@@ -17,9 +17,9 @@ configuration = AppConfig(reload=True)
 
 if not request.env.web2py_runtime_gae:
     db = DAL(configuration.get('db.uri'),
-             pool_size=configuration.get('db.pool_size'),
-             migrate_enabled=configuration.get('db.migrate'),
-             check_reserved=['all'])
+            pool_size=configuration.get('db.pool_size'),
+            migrate_enabled=configuration.get('db.migrate'),
+            check_reserved=['all'])
     session.connect(request, response, db=db)
 else:
     db = DAL('google:datastore+ndb')
@@ -29,7 +29,6 @@ if request.is_local and not configuration.get('app.production'):
     response.generic_patterns.append('*')
 response.formstyle = configuration.get('forms.formstyle')
 response.form_label_separator = configuration.get('forms.separator') or ''
-
 if configuration.get('scheduler.enabled'):
     from gluon.scheduler import Scheduler
     scheduler = Scheduler(db, heartbeat=configure.get('heartbeat'))
@@ -45,8 +44,8 @@ service = Service()
 plugins = PluginManager()
 
 auth.settings.extra_fields['auth_user'] = [
-    Field('bio', 'text'),
-    Field('is_public', 'boolean'),
+    Field('bio', type='text', default=None),
+    Field('is_public', type='boolean', default=False),
 ]
 auth.define_tables(username=False, signature=False)
 
@@ -57,6 +56,17 @@ auth.settings.reset_password_requires_verification = False
 auth.settings.actions_disabled.append('verify_email')
 auth.settings.actions_disabled.append('retrieve_username')
 auth.settings.actions_disabled.append('request_reset_password')
+
+def user_bar():
+    action = '/user'
+    if auth.user:
+        logout = A('Logout', _href=URL('user', args='logout'))
+        bar = SPAN('Hello '+auth.user.first_name, ' | ', logout, _class='auth_navbar')
+    else:
+        login = A('Log In', _href=URL('user', args='login'))
+        register=A('Sign Up',_href=URL('user', args='register'))
+        bar = SPAN('', login, '', register, _class='auth_navbar')
+    return bar
 
 
 
@@ -69,12 +79,10 @@ response.logo = A(B('web', SPAN(2), 'py'), XML('&trade;&nbsp;'),
                   _id="web2py-logo")
 response.title = request.application.replace('_', ' ').title()
 response.subtitle = ''
-
 response.meta.author = configuration.get('app.author')
 response.meta.description = configuration.get('app.description')
 response.meta.keywords = configuration.get('app.keywords')
 response.meta.generator = configuration.get('app.generator')
-
 response.google_analytics_id = None
 
 
