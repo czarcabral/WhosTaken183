@@ -152,3 +152,9 @@ CREATE TABLE "enrollments"(
     "is_grade_public" CHAR(512)
 );
 success!
+timestamp: 2018-06-01T14:03:30.676991
+ALTER TABLE "auth_user" ADD "bio" CHAR(512);
+timestamp: 2018-06-01T14:03:30.706560
+ALTER TABLE "auth_user" ADD "is_public" CHAR(512);
+success!
+success!
