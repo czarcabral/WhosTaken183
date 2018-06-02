@@ -1,6 +1,9 @@
 {{extend 'layout.html'}}
 
 {{block head}}
+<script>
+  var add_class_url = "{{=URL('api', 'add_class')}}";
+</script>
 {{end head}}
 
 {{block header}}
@@ -8,10 +11,18 @@
 {{end header}}
 
 {{block main}}
+<div id="vue-div" style="display:none">
+  <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="upload_file()">
+    <label for="upload_transcript_file_input">Upload your transcript (.html) file:</label>
+    <input type="file" id="upload_transcript_file_input" accept=".html">
+    <button type="submit">Upload</button>
+  </form>
+</div>
 {{end main}}
 
 {{block footer}}
 {{end footer}}
 
 {{block js}}
+<script src="{{=URL('static', 'js/profile.js')}}"></script>
 {{end js}}

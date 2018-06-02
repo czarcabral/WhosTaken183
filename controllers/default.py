@@ -5,6 +5,7 @@ def index():
     return dict()
 
 def profile():
+    if not auth.user : redirect(URL('user'))
     return dict()
 
 def user():
