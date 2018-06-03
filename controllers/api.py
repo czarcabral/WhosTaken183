@@ -16,7 +16,7 @@ def add_enrollment():
     course_name = request.vars.course_name
     quarter = request.vars.quarter
     grade = request.vars.grade
-    myquery = (db.enrollments.course_name == course_name) & (db.enrollments.quarter == quarter)
+    myquery = (db.enrollments.user_id == auth.user) & (db.enrollments.course_name == course_name) & (db.enrollments.quarter == quarter)
     db.enrollments.update_or_insert(
         myquery,
         course_name=course_name,
