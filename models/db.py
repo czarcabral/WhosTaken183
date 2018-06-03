@@ -60,11 +60,11 @@ auth.settings.actions_disabled.append('request_reset_password')
 def user_bar():
     action = '/user'
     if auth.user:
-        logout = A('Logout', _href=URL('user', args='logout'))
+        logout = A('Logout', _href=URL('default', 'user', args='logout'))
         bar = SPAN('Hello '+auth.user.first_name, ' | ', logout, _class='auth_navbar')
     else:
-        login = A('Log In', _href=URL('user', args='login'))
-        register=A('Sign Up',_href=URL('user', args='register'))
+        login = A('Log In', _href=URL('default', 'user', args='login'))
+        register=A('Sign Up',_href=URL('default', 'user', args='register'))
         bar = SPAN('', login, '', register, _class='auth_navbar')
     return bar
 

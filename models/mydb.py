@@ -13,17 +13,17 @@ db.define_table('memberships',
     Field('is_admin', type='boolean'),
 )
 
-db.define_table('classes',
-    Field('class_id'), # i.e. cmps183
-    Field('class_name'), # i.e. web applications
+db.define_table('courses',
+    Field('name'), # i.e. cmps183
+    Field('description'), # i.e. web applications
     # Field('description'),
 )
 
 db.define_table('enrollments',
-    Field('student_id', type='integer', default=get_auth_user()),
-    Field('class_id'),
+    Field('user_id', type='integer', default=get_auth_user()),
+    Field('course_name'),
     Field('quarter'),
     Field('grade'),
-    Field('is_class_public', type='boolean', default=True),
+    Field('is_course_public', type='boolean', default=True),
     Field('is_grade_public', type='boolean', default=True),
 )
