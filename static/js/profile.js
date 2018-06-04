@@ -78,6 +78,8 @@ var app = function() {
         let sel8 = 'td.'+temp_node.className;
         temp_node = temp_nodelist.item(2);
         let sel9 = 'td.'+temp_node.className;
+
+        // selectors: grade
         temp_node = temp_nodelist.item(5);
         let sel10 = 'td.'+temp_node.className;
         
@@ -120,14 +122,9 @@ var app = function() {
                 let grade_node = course_node.querySelector(sel10);
                 if(grade_node != null) {
                     var grade = null;
-                    if(grade_node.childNodes == 0) {
-                        // FIX THIS - CURRENTLY IS NOT CALLED
-                        grade = '';
-                    } else {
-                        let grade_node_ = grade_node.querySelector(sel5+' span.c11');
-                        if(grade_node_ != null) {
-                            grade = grade_node_.textContent;    
-                        };
+                    let grade_node_ = grade_node.querySelector(sel5+' span.c11');
+                    if(grade_node_ != null) {
+                        grade = grade_node_.textContent;    
                     };
                     if(grade != null) {
                         course_obj.grade = grade;
