@@ -25,7 +25,7 @@
     First name: <input type="text" v-model="first_name">
     Last name: <input type="text" v-model="last_name">
     Email: <input type="email" v-model="email">
-    Bio: <input v-model="bio">
+    Bio: <textarea v-model="bio"></textarea>
     Make profile public: <input id="ispub" type="checkbox" v-model="is_public">
     <label for="ispub" v-if="is_public">Profile is publicly visible</label>
     <label for="ispub" v-else>Profile is only seen by shared organization members</label>
