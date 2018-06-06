@@ -171,7 +171,22 @@ var app = function() {
         } else {
             alert('failed to load file');
         };
-    },
+    };
+
+    self.update_profile = function() {
+        $.post(update_profile_url, {
+            id: self.vue.user_id,
+            first_name: self.vue.first_name,
+            last_name: self.vue.last_name,
+            email: self.vue.email,
+            bio: self.vue.bio,
+            is_public: self.vue.is_public
+        }, function(data) {
+
+            }
+        );
+    }
+
     self.vue = new Vue({
         el: "#vue-div",
         delimiters: ['${', '}'],
@@ -187,6 +202,7 @@ var app = function() {
         },
         methods: {
             upload_file: self.upload_file,
+            update_profile: self.update_profile
         },
         computed: {
         },

@@ -5,6 +5,7 @@
   var get_auth_user_url = "{{=URL('api', 'get_auth_user')}}";
   var add_course_url = "{{=URL('api', 'add_course')}}";
   var add_enrollment_url = "{{=URL('api', 'add_enrollment')}}";
+  var update_profile_url = "{{=URL('api', 'update_profile')}}";
 </script>
 {{end head}}
 
@@ -19,13 +20,16 @@
     <input type="file" id="upload_transcript_file_input" accept=".html, .htm">
     <button type="submit">Upload</button>
   </form>
-  <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="">
-    <label for="">Edit your profile information:</label>
-    <input v-model="first_name">
-    <input v-model="last_name">
-    <input v-model="email">
-    <input v-model="bio">
-    Make profile public: <input type="checkbox" v-model="is_public"><br/>
+  <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="update_profile()">
+    <label for="">Update your profile information:</label><br/>
+    First name: <input type="text" v-model="first_name">
+    Last name: <input type="text" v-model="last_name">
+    Email: <input type="email" v-model="email">
+    Bio: <input v-model="bio">
+    Make profile public: <input id="ispub" type="checkbox" v-model="is_public">
+    <label for="ispub" v-if="is_public">Profile is publicly visible</label>
+    <label for="ispub" v-else>Profile is only seen by shared organization members</label>
+    <br/>
     <button type="submit">Confirm</button>
   </form>
 </div>
