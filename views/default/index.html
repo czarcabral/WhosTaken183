@@ -1,6 +1,10 @@
 {{extend 'layout.html'}}
 
 {{block head}}
+<script>
+  var get_users_url = "{{=URL('api', 'get_users')}}";
+  var get_enrollments_url = "{{=URL('api', 'get_enrollments')}}";
+</script>
 {{end head}}
 
 {{block header}}
@@ -9,7 +13,26 @@
 
 {{block main}}
 {{end main}}
-
+<div id="vue-div" style="display:none">
+  <table>
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Course</th>
+        <th>Quarter</th>
+        <th>Grade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="enrollment in enrollments">
+        <td>${enrollment.user_full_name}</td>
+        <td>${enrollment.course_name}</td>
+        <td>${enrollment.quarter}</td>
+        <td>${enrollment.grade}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 {{block footer}}
 {{end footer}}
 

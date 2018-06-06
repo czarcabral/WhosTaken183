@@ -26,3 +26,14 @@ def add_enrollment():
     rows = db(myquery).select()
     enrollment = rows[0]
     return response.json(dict(enrollment=enrollment))
+
+def get_users():
+    users = db(db.auth_user.is_public==True).select(db.auth_user.id, db.auth_user.first_name, db.auth_user.last_name, db.auth_user.email, db.auth_user.bio)
+    return response.json(dict(users=users))
+
+def get_enrollments():
+    enrollments = db((db.enrollments.is_course_public == True) | (db.enrollments.user_id == auth.user.id)).select()
+    for enrollment in enrollments:
+        if(enrollment.is_grade_public == False) and (enrollment.user_id != auth.user.id) :
+            enrollment.update(grade='PRIVATE')
+    return response.json(dict(enrollments=enrollments))

@@ -45,7 +45,7 @@ plugins = PluginManager()
 
 auth.settings.extra_fields['auth_user'] = [
     Field('bio', type='text', default=None),
-    Field('is_public', type='boolean', default=False),
+    Field('is_public', type='boolean', default=True),
 ]
 auth.define_tables(username=False, signature=False)
 

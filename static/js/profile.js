@@ -1,6 +1,11 @@
 var app = function() {
     var self = {};
     Vue.config.silent = false;
+    self.add_course = function(name, description) {
+        $.post(add_course_url, 
+            {course_name:name, course_description:description},
+        );
+    };
     self.fill_courses_db = function(enrollment_objs) {
         for(var i=0; i<enrollment_objs.length; i++) {
             let enrollment_obj = enrollment_objs[i];
@@ -10,13 +15,15 @@ var app = function() {
                 let course_name = course.course_name;
                 let course_description = course.course_description;
                 (function(course_name, course_description) {
-                    $.post(add_course_url, 
-                        {course_name:course_name, course_description:course_description}, 
-                        function(data) {}
-                    );
+                    self.add_course(course_name, course_description);
                 })(course_name, course_description);
             };
         };
+    };
+    self.add_enrollment = function(course_name, quarter, grade) {
+        $.post(add_enrollment_url, 
+            {course_name:course_name, quarter:quarter, grade:grade},
+        );
     };
     self.fill_enrollments_db = function(enrollment_objs) {
         for(var i=0; i<enrollment_objs.length; i++) {
@@ -28,10 +35,7 @@ var app = function() {
                 let course_name = course.course_name;
                 let grade = course.grade;
                 (function(course_name, quarter, grade) {
-                    $.post(add_enrollment_url, 
-                        {course_name:course_name, quarter:quarter, grade:grade}, 
-                        function(data) {}
-                    );
+                    self.add_enrollment(course_name, quarter, grade);
                 })(course_name, quarter, grade);
             };
         };
