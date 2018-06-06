@@ -2,8 +2,10 @@
 
 {{block head}}
 <script>
+  var get_auth_user_url = "{{=URL('api', 'get_auth_user')}}";
   var get_users_url = "{{=URL('api', 'get_users')}}";
   var get_enrollments_url = "{{=URL('api', 'get_enrollments')}}";
+  var get_courses_url = "{{=URL('api', 'get_courses')}}";
 </script>
 {{end head}}
 
@@ -24,11 +26,11 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="enrollment in enrollments">
-        <td>${enrollment.user_full_name}</td>
-        <td>${enrollment.course_name}</td>
-        <td>${enrollment.quarter}</td>
-        <td>${enrollment.grade}</td>
+      <tr v-for="auth_user_enrollment in auth_user_enrollments">
+        <td>${auth_user_enrollment.user_full_name}</td>
+        <td>${auth_user_enrollment.course_name}</td>
+        <td>${auth_user_enrollment.quarter}</td>
+        <td>${auth_user_enrollment.grade}</td>
       </tr>
     </tbody>
   </table>

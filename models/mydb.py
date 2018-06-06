@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-def get_auth_user():
+def get_auth_user_id():
     return auth.user.id if auth.user else None
 
 db.define_table('groups',
@@ -20,7 +20,7 @@ db.define_table('courses',
 )
 
 db.define_table('enrollments',
-    Field('user_id', type='integer', default=get_auth_user()),
+    Field('user_id', type='integer', default=get_auth_user_id()),
     Field('course_name'),
     Field('quarter'),
     Field('grade'),
