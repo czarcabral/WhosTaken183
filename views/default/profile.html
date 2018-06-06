@@ -2,6 +2,7 @@
 
 {{block head}}
 <script>
+  var get_auth_user_url = "{{=URL('api', 'get_auth_user')}}";
   var add_course_url = "{{=URL('api', 'add_course')}}";
   var add_enrollment_url = "{{=URL('api', 'add_enrollment')}}";
 </script>
@@ -15,8 +16,17 @@
 <div id="vue-div" style="display:none" class="container padded">
   <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="upload_file()">
     <label for="upload_transcript_file_input">Upload your transcript (.html) file:</label>
-    <input type="file" id="upload_transcript_file_input" accept=".html">
+    <input type="file" id="upload_transcript_file_input" accept=".html, .htm">
     <button type="submit">Upload</button>
+  </form>
+  <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="">
+    <label for="">Edit your profile information:</label>
+    <input v-model="first_name">
+    <input v-model="last_name">
+    <input v-model="email">
+    <input v-model="bio">
+    Make profile public: <input type="checkbox" v-model="is_public"><br/>
+    <button type="submit">Confirm</button>
   </form>
 </div>
 {{end main}}
