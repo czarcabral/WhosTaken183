@@ -10,30 +10,32 @@
 {{end head}}
 
 {{block header}}
-<h1>Welcome to INDEX</h1>
+<h1 class="center">Welcome to INDEX</h1>
 {{end header}}
 
 {{block main}}
 {{end main}}
-<div id="vue-div" style="display:none">
-  <table>
-    <thead>
-      <tr>
-        <th>Student</th>
-        <th>Course</th>
-        <th>Quarter</th>
-        <th>Grade</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="auth_user_enrollment in auth_user_enrollments">
-        <td>${auth_user_enrollment.user_full_name}</td>
-        <td>${auth_user_enrollment.course_name}</td>
-        <td>${auth_user_enrollment.quarter}</td>
-        <td>${auth_user_enrollment.grade}</td>
-      </tr>
-    </tbody>
-  </table>
+<div id="vue-div" style="display:none" class="container padded">
+  <div class="user_space quarter left">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Course</th>
+          <th>Quarter</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="auth_user_enrollment in auth_user_enrollments">
+          <td>${auth_user_enrollment.user_full_name}</td>
+          <td>${auth_user_enrollment.course_name}</td>
+          <td>${auth_user_enrollment.quarter}</td>
+          <td>${auth_user_enrollment.grade}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 {{block footer}}
 {{end footer}}
