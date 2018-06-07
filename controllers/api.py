@@ -68,7 +68,7 @@ def get_courses():
 
 def update_profile():
     db.auth_user.update_or_insert(
-        db.auth_user.id == request.vars.id,
+        db.auth_user.id == get_auth_user_id(),
         first_name=request.vars.first_name,
         last_name=request.vars.last_name,
         email=request.vars.email,

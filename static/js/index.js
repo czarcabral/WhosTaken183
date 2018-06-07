@@ -3,33 +3,6 @@ var app = function() {
     Vue.config.silent = false;
 
 
-    // search and filter predicates
-    self.is_elem = function(targ) {
-        return function(elem) { return elem == targ; };
-    };
-    self.is_id = function(id) {
-        return function(elem) { return elem.id == id; };
-    };
-    self.is_name = function(course_name) {
-        return function(elem) { return elem.name == course_name; };
-    };
-    self.is_course_name = function(course_name) {
-        return function(elem) { return elem.course_name == course_name; };
-    };
-    self.is_user_id = function(user_id) {
-        return function(elem) { return elem.user_id == user_id; };
-    };
-    self.is_not_user_id = function(user_id) {
-        return function(elem) { return elem.user_id != user_id; };
-    };
-    self.is_quarter = function(quarter) {
-        return function(elem) { return elem.quarter == quarter; };
-    };
-    self.is_not_quarter = function(quarter) {
-        return function(elem) { return elem.quarter != quarter; };
-    };
-
-
     // API Calls
     self.get_auth_user = function() {
         return $.getJSON(get_auth_user_url).fail(function() {
@@ -53,25 +26,14 @@ var app = function() {
     };
 
 
-    // UI Click Functions
-    self.click_course = function(id) {
-        let clicked_course_i = self.vue.clicked_courses.findIndex(self.is_elem(id));
-        if(clicked_course_i == -1) {
-            self.vue.clicked_courses.push(id);
-        } else {
-            self.vue.clicked_courses.splice(clicked_course_i, 1);
-        };
-    };
-
-
-    // Helper Functions
+    // Private Helper functions
     self.init_data = function() {
         $.when(
             self.get_auth_user(), 
             self.get_users(), 
             self.get_enrollments(), 
             self.get_courses()
-        ).done(function(response1, response2, response3, response4) {
+        ).done(function(response1, response2, response3, response4) { // <-- Note: if .when only has one function, then .done has the response.data
             self.vue.auth_user = response1[0].auth_user;
             self.vue.users = response2[0].users;
             self.vue.enrollments = response3[0].enrollments;
@@ -116,6 +78,44 @@ var app = function() {
         let users = self.users_enrolled(enrollments);
         return users;
     },
+
+
+    // search and filter predicates
+    self.is_elem = function(targ) {
+        return function(elem) { return elem == targ; };
+    };
+    self.is_id = function(id) {
+        return function(elem) { return elem.id == id; };
+    };
+    self.is_name = function(course_name) {
+        return function(elem) { return elem.name == course_name; };
+    };
+    self.is_course_name = function(course_name) {
+        return function(elem) { return elem.course_name == course_name; };
+    };
+    self.is_user_id = function(user_id) {
+        return function(elem) { return elem.user_id == user_id; };
+    };
+    self.is_not_user_id = function(user_id) {
+        return function(elem) { return elem.user_id != user_id; };
+    };
+    self.is_quarter = function(quarter) {
+        return function(elem) { return elem.quarter == quarter; };
+    };
+    self.is_not_quarter = function(quarter) {
+        return function(elem) { return elem.quarter != quarter; };
+    };
+
+
+    // UI functions
+    self.click_course = function(id) {
+        let clicked_course_i = self.vue.clicked_courses.findIndex(self.is_elem(id));
+        if(clicked_course_i == -1) {
+            self.vue.clicked_courses.push(id);
+        } else {
+            self.vue.clicked_courses.splice(clicked_course_i, 1);
+        };
+    };
 
 
     self.vue = new Vue({
