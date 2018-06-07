@@ -65,3 +65,13 @@ def get_enrollments():
 def get_courses():
     courses = db(db.courses).select()
     return response.json(dict(courses=courses))
+
+def update_profile():
+    db.auth_user.update_or_insert(
+        db.auth_user.id == request.vars.id,
+        first_name=request.vars.first_name,
+        last_name=request.vars.last_name,
+        email=request.vars.email,
+        bio=request.vars.bio,
+        is_public=request.vars.is_public
+    )

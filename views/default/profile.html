@@ -2,21 +2,35 @@
 
 {{block head}}
 <script>
+  var get_auth_user_url = "{{=URL('api', 'get_auth_user')}}";
   var add_course_url = "{{=URL('api', 'add_course')}}";
   var add_enrollment_url = "{{=URL('api', 'add_enrollment')}}";
+  var update_profile_url = "{{=URL('api', 'update_profile')}}";
 </script>
 {{end head}}
 
 {{block header}}
-<h1>Welcome to PROFILE</h1>
+<h1 class="center">Welcome to PROFILE</h1>
 {{end header}}
 
 {{block main}}
-<div id="vue-div" style="display:none">
+<div id="vue-div" style="display:none" class="container padded">
   <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="upload_file()">
     <label for="upload_transcript_file_input">Upload your transcript (.html) file:</label>
-    <input type="file" id="upload_transcript_file_input" accept=".html">
+    <input type="file" id="upload_transcript_file_input" accept=".html, .htm">
     <button type="submit">Upload</button>
+  </form>
+  <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="update_profile()">
+    <label for="">Update your profile information:</label><br/>
+    First name: <input type="text" v-model="first_name">
+    Last name: <input type="text" v-model="last_name">
+    Email: <input type="email" v-model="email">
+    Bio: <textarea v-model="bio"></textarea>
+    Make profile public: <input id="ispub" type="checkbox" v-model="is_public">
+    <label for="ispub" v-if="is_public">Profile is publicly visible</label>
+    <label for="ispub" v-else>Profile is only seen by shared organization members</label>
+    <br/>
+    <button type="submit">Confirm</button>
   </form>
 </div>
 {{end main}}
