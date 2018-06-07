@@ -2,26 +2,49 @@ var app = function() {
     var self = {};
     Vue.config.silent = false;
 
+
+    // API Calls
     self.get_auth_user = function() {
-        $.getJSON(get_auth_user_url, function(data)
-        {
-            self.vue.user_id = data.auth_user.id;
-            self.vue.first_name = data.auth_user.first_name;
-            self.vue.last_name = data.auth_user.last_name;
-            self.vue.email =  data.auth_user.email;
-            self.vue.bio = data.auth_user.bio;
-            self.vue.is_public = data.auth_user.is_public;
-        })
+        return $.getJSON(get_auth_user_url).fail(function() {
+            alert('ERROR - getJSON request (get_auth_user_url) failed');
+        });
     };
     self.add_course = function(name, description) {
-        $.post(add_course_url, 
-            {course_name:name, course_description:description},
-        );
+        return $.post(add_course_url, {course_name:name, course_description:description}).fail(function() {
+            alert('ERROR - post request (add_course_url) failed');
+        });
     };
-    self.fill_courses_db = function(enrollment_objs) {
-        for(var i=0; i<enrollment_objs.length; i++) {
-            let enrollment_obj = enrollment_objs[i];
-            let courses = enrollment_obj.courses;
+    self.add_enrollment = function(course_name, quarter, grade) {
+        return $.post(add_enrollment_url, {course_name:course_name, quarter:quarter, grade:grade}).fail(function() {
+            alert('ERROR - post request (add_enrollment_url) failed');
+        });
+    };
+    self.update_profile = function(user) {
+        return $.post(update_profile_url, 
+            {
+                id: user.user_id,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                email: user.email,
+                bio: user.bio,
+                is_public: user.is_public,
+            }
+        ).fail(function() {
+            alert('ERROR - post request (update_profile_url) failed');
+        });
+    }
+
+
+    // Private Helper functions
+    self.init_data = function() {
+        $.when(self.get_auth_user()).done(function(response1) {
+            self.vue.auth_user = response1.auth_user;
+        });
+    };
+    self.fill_courses_db = function(transcript_objs) {
+        for(var i=0; i<transcript_objs.length; i++) {
+            let transcript_obj = transcript_objs[i];
+            let courses = transcript_obj.courses;
             for(var j=0; j<courses.length; j++) {
                 let course = courses[j];
                 let course_name = course.course_name;
@@ -32,16 +55,11 @@ var app = function() {
             };
         };
     };
-    self.add_enrollment = function(course_name, quarter, grade) {
-        $.post(add_enrollment_url, 
-            {course_name:course_name, quarter:quarter, grade:grade},
-        );
-    };
-    self.fill_enrollments_db = function(enrollment_objs) {
-        for(var i=0; i<enrollment_objs.length; i++) {
-            let enrollment_obj = enrollment_objs[i];
-            let quarter = enrollment_obj.quarter;
-            let courses = enrollment_obj.courses;
+    self.fill_enrollments_db = function(transcript_objs) {
+        for(var i=0; i<transcript_objs.length; i++) {
+            let transcript_obj = transcript_objs[i];
+            let quarter = transcript_obj.quarter;
+            let courses = transcript_obj.courses;
             for(var j=0; j<courses.length; j++) {
                 let course = courses[j];
                 let course_name = course.course_name;
@@ -52,13 +70,13 @@ var app = function() {
             };
         };
     };
-    self.fill_databases = function(enrollment_objs) {
-        self.fill_courses_db(enrollment_objs);
-        self.fill_enrollments_db(enrollment_objs);
+    self.fill_databases = function(transcript_objs) {
+        self.fill_courses_db(transcript_objs);
+        self.fill_enrollments_db(transcript_objs);
     };
     self.parse_doc = function(doc) {
-        var enrollment_objs = [];
-        var enrollment_objs_i = 0;
+        var transcript_objs = [];
+        var transcript_objs_i = 0;
 
         // set up selectors
         var temp_node = null;
@@ -113,7 +131,7 @@ var app = function() {
             for(var j=0; j<quarter_nodelist.length; j++) {
                 let quarter_node = quarter_nodelist.item(j);
                 let quarter = quarter_node.innerText;
-                enrollment_objs_i = enrollment_objs.push({quarter:quarter, courses:[]}) - 1;
+                transcript_objs_i = transcript_objs.push({quarter:quarter, courses:[]}) - 1;
             };
             // get courses
             let course_nodelist = table_node.querySelectorAll(course_selector);
@@ -148,14 +166,16 @@ var app = function() {
                 };
                 // add course array of courses per quarter
                 if(!$.isEmptyObject(course_obj)) {
-                    (enrollment_objs[enrollment_objs_i]).courses.push(course_obj);
-                    self.vue.temp = enrollment_objs;
+                    (transcript_objs[transcript_objs_i]).courses.push(course_obj);
                 };
             };
         };
-        self.fill_databases(enrollment_objs);
+        return transcript_objs;
     };
-    self.upload_file = function() {
+
+
+    // UI functions
+    self.try_upload_file = function() {
         let input = document.querySelector('#upload_transcript_file_input');
         let files = input.files;
         let file = files[0];
@@ -166,48 +186,39 @@ var app = function() {
                 let result_str = reader.result;
                 let doc = document.createElement('html');
                 doc.innerHTML = result_str;
-                self.parse_doc(doc);
+                let transcript_objs = self.parse_doc(doc);
+                self.fill_databases(transcript_objs);
             };
         } else {
             alert('failed to load file');
         };
     };
-
-    self.update_profile = function() {
-        $.post(update_profile_url, {
-            id: self.vue.user_id,
-            first_name: self.vue.first_name,
-            last_name: self.vue.last_name,
-            email: self.vue.email,
-            bio: self.vue.bio,
-            is_public: self.vue.is_public
-        }, function(data) {
-
-            }
-        );
-    }
+    self.try_update_profile = function() {
+        let user = {
+            first_name: document.querySelector('#first_name_input').value,
+            last_name: document.querySelector('#last_name_input').value,
+            email: document.querySelector('#email_input').value,
+            bio: (document.querySelector('#bio_input')).value,
+            is_public: document.querySelector('#is_public_input').checked,
+        };
+        self.update_profile(user);
+    };
 
     self.vue = new Vue({
         el: "#vue-div",
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
-            temp: null,
-            user_id: null,
-            first_name: null,
-            last_name: null,
-            email: null,
-            bio: null,
-            is_public: null
+            auth_user: {},
         },
         methods: {
-            upload_file: self.upload_file,
-            update_profile: self.update_profile
+            upload_file: self.try_upload_file,
+            update_profile: self.try_update_profile,
         },
         computed: {
         },
         created() {
-            self.get_auth_user();
+            self.init_data();
             $('#vue-div').show();
         }
     });
