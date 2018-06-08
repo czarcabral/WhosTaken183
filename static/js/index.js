@@ -88,10 +88,12 @@ var app = function() {
         for(var i=0; i<enrollments.length; i++) {
             let user_id = enrollments[i].user_id;
             let user = self.vue.users.find(self.is_id(user_id));
-            let users_i = users.push({id:user_id, name:user.first_name+' '+user.last_name, quarter:enrollments[i].quarter}) - 1;
-            // alert(users_i);
-            if(enrollments[i].is_grade_public) {
-                users[users_i].grade = enrollments[i].grade;
+            if(user) {
+                let users_i = users.push({id:user_id, name:user.first_name+' '+user.last_name, quarter:enrollments[i].quarter}) - 1;
+                // alert(users_i);
+                if(enrollments[i].is_grade_public) {
+                    users[users_i].grade = enrollments[i].grade;
+                };
             };
         };
         return users;
@@ -117,6 +119,12 @@ var app = function() {
         enrollments = enrollments.filter(self.is_not_quarter(this_.current_quarter));
         let users = self.users_enrolled(enrollments);
         return users;
+    };
+
+    
+    // Other functions
+    self.is_transcript_loaded = function() {
+        return (self.vue.enrollments.find(self.is_user_id(self.vue.auth_user.id)) != null);
     };
 
 
@@ -149,6 +157,8 @@ var app = function() {
             auth_user_current_enrollments: self.auth_user_current_enrollments,
             users_currently_enrolled: self.users_currently_enrolled,
             users_past_enrolled: self.users_past_enrolled,
+
+            is_transcript_loaded: self.is_transcript_loaded,
 
             click_course: self.click_course,
         },
