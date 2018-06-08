@@ -9,14 +9,19 @@ var app = function() {
             alert('ERROR - getJSON request (get_auth_user_url) failed');
         });
     };
-    self.add_course = function(name, description) {
-        return $.post(add_course_url, {course_name:name, course_description:description}).fail(function() {
-            alert('ERROR - post request (add_course_url) failed');
+    self.get_enrollments = function() {
+        return $.getJSON(get_enrollments_url).fail(function() {
+            alert('ERROR - getJSON request (get_enrollments_url) failed');
         });
     };
-    self.add_enrollment = function(course_name, quarter, grade) {
-        return $.post(add_enrollment_url, {course_name:course_name, quarter:quarter, grade:grade}).fail(function() {
-            alert('ERROR - post request (add_enrollment_url) failed');
+    self.add_multiple_enrollments = function(enrollments) {
+        return $.post(add_multiple_enrollments_url, {enrollments:JSON.stringify(enrollments)}).fail(function() {
+            alert('ERROR - post request (add_multiple_enrollments_url) failed');
+        });
+    };
+    self.add_multiple_courses = function(courses) {
+        return $.post(add_multiple_courses_url, {courses:JSON.stringify(courses)}).fail(function() {
+            alert('ERROR - post request (add_multiple_courses_url) failed');
         });
     };
     self.update_profile = function(user) {
@@ -37,42 +42,35 @@ var app = function() {
 
     // Private Helper functions
     self.init_data = function() {
-        $.when(self.get_auth_user()).done(function(response1) {
-            self.vue.auth_user = response1.auth_user;
+        $.when(
+            self.get_auth_user(),
+            self.get_enrollments(),
+        ).done(function(response1, response2) {
+            self.vue.auth_user = response1[0].auth_user;
+            self.vue.enrollments = response2[0].enrollments;
+            self.vue.is_loaded = true;
         });
     };
-    self.fill_courses_db = function(transcript_objs) {
-        for(var i=0; i<transcript_objs.length; i++) {
-            let transcript_obj = transcript_objs[i];
-            let courses = transcript_obj.courses;
-            for(var j=0; j<courses.length; j++) {
-                let course = courses[j];
-                let course_name = course.course_name;
-                let course_description = course.course_description;
-                (function(course_name, course_description) {
-                    self.add_course(course_name, course_description);
-                })(course_name, course_description);
-            };
-        };
-    };
-    self.fill_enrollments_db = function(transcript_objs) {
+    self.fill_databases = function(transcript_objs) {
+        let enrollments = [];
+        let courses = [];
         for(var i=0; i<transcript_objs.length; i++) {
             let transcript_obj = transcript_objs[i];
             let quarter = transcript_obj.quarter;
-            let courses = transcript_obj.courses;
-            for(var j=0; j<courses.length; j++) {
-                let course = courses[j];
+            let courses_ = transcript_obj.courses;
+            for(var j=0; j<courses_.length; j++) {
+                let course = courses_[j];
                 let course_name = course.course_name;
-                let grade = course.grade;
-                (function(course_name, quarter, grade) {
-                    self.add_enrollment(course_name, quarter, grade);
-                })(course_name, quarter, grade);
+                var grade = course.grade;
+                if(grade==null) {
+                    grade = (quarter==self.vue.current_quarter)?'IN PROGRESS':'N/A';
+                };
+                let course_description = course.course_description;
+                enrollments.push({course_name:course_name, quarter:quarter, grade:grade});
+                courses.push({course_name:course_name, course_description:course_description});
             };
         };
-    };
-    self.fill_databases = function(transcript_objs) {
-        self.fill_courses_db(transcript_objs);
-        self.fill_enrollments_db(transcript_objs);
+        $.when(self.add_multiple_enrollments(enrollments), self.add_multiple_courses(courses));
     };
     self.parse_doc = function(doc) {
         var transcript_objs = [];
@@ -174,6 +172,21 @@ var app = function() {
     };
 
 
+    // search and filter predicates
+    self.is_user_id = function(user_id) {
+        return function(elem) { return elem.user_id == user_id; };
+    };
+
+
+    // List rendering functions
+    self.auth_user_enrollments = function() {
+        let this_ = self.vue;
+        // query auth_user's enrollments
+        var enrollments = this_.enrollments.filter(self.is_user_id(this_.auth_user.id));
+        return enrollments;
+    };
+
+
     // UI functions
     self.try_upload_file = function() {
         let input = document.querySelector('#upload_transcript_file_input');
@@ -204,14 +217,21 @@ var app = function() {
         self.update_profile(user);
     };
 
+    
     self.vue = new Vue({
         el: "#vue-div",
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
+            is_loaded: false,
             auth_user: {},
+            enrollments: [],
+            current_quarter: '2018 Spring Quarter',
         },
         methods: {
+            is_user_id: self.is_user_id,
+            auth_user_enrollments: self.auth_user_enrollments,
+
             upload_file: self.try_upload_file,
             update_profile: self.try_update_profile,
         },
