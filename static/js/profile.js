@@ -84,7 +84,11 @@ var app = function() {
         $.when(
             self.add_multiple_enrollments(enrollments), 
             self.add_multiple_courses(courses),
-        );
+        ).then(function() {
+            return self.get_enrollments();
+        }).then(function(response) {
+            self.vue.enrollments = response.enrollments;
+        });
     };
     self.update_databases = function(transcript_objs) {
         let results = self.make_enrollments_courses(transcript_objs);
@@ -93,7 +97,12 @@ var app = function() {
         $.when(
             self.update_multiple_enrollments(enrollments), 
             self.add_multiple_courses(courses),
-        );
+        ).then(function() {
+            return self.get_enrollments();
+        }).then(function(response) {
+            self.vue.enrollments = response.enrollments;
+            self.toggle_update_transcript();
+        });
     };
     self.parse_doc = function(doc) {
         var transcript_objs = [];
@@ -236,9 +245,6 @@ var app = function() {
                 doc.innerHTML = result_str;
                 let transcript_objs = self.parse_doc(doc);
                 self.fill_databases(transcript_objs);
-                $.when(self.get_enrollments()).done(function(response) {
-                    self.vue.enrollments = response.enrollments;
-                });
             };
         } else {
             alert('failed to load file');
@@ -256,11 +262,7 @@ var app = function() {
                 let doc = document.createElement('html');
                 doc.innerHTML = result_str;
                 let transcript_objs = self.parse_doc(doc);
-                $.when(self.update_databases(transcript_objs));
-                $.when(self.get_enrollments()).done(function(response) {
-                    self.vue.enrollments = response.enrollments;
-                    self.toggle_update_transcript();
-                });
+                self.update_databases(transcript_objs)
             };
         } else {
             alert('failed to load file');
