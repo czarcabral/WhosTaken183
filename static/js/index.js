@@ -121,6 +121,12 @@ var app = function() {
         return users;
     };
 
+    
+    // Other functions
+    self.is_transcript_loaded = function() {
+        return (self.vue.enrollments.find(self.is_user_id(self.vue.auth_user.id)) != null);
+    };
+
 
     // UI functions
     self.click_course = function(id) {
@@ -151,6 +157,8 @@ var app = function() {
             auth_user_current_enrollments: self.auth_user_current_enrollments,
             users_currently_enrolled: self.users_currently_enrolled,
             users_past_enrolled: self.users_past_enrolled,
+
+            is_transcript_loaded: self.is_transcript_loaded,
 
             click_course: self.click_course,
         },

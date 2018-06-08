@@ -74,6 +74,13 @@ def add_multiple_courses():
         add_course(course)
     return response.json(dict())
 
+def update_multiple_enrollments():
+    db(db.enrollments.user_id == get_auth_user_id()).delete()
+    enrollments = eval(request.vars.enrollments)
+    for enrollment in enrollments:
+        add_enrollment(enrollment)
+    return response.json(dict())
+
 def update_profile():
     db.auth_user.update_or_insert(
         db.auth_user.id == get_auth_user_id(),
@@ -83,3 +90,4 @@ def update_profile():
         bio=request.vars.bio,
         is_public=request.vars.is_public
     )
+    return get_auth_user()

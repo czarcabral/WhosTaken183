@@ -24,6 +24,11 @@ var app = function() {
             alert('ERROR - post request (add_multiple_courses_url) failed');
         });
     };
+    self.update_multiple_enrollments = function(enrollments) {
+        return $.post(update_multiple_enrollments_url, {enrollments:JSON.stringify(enrollments)}).fail(function() {
+            alert('ERROR - post request (update_multiple_enrollments_url) failed');
+        });
+    };
     self.update_profile = function(user) {
         return $.post(update_profile_url, 
             {
@@ -51,7 +56,7 @@ var app = function() {
             self.vue.is_loaded = true;
         });
     };
-    self.fill_databases = function(transcript_objs) {
+    self.make_enrollments_courses = function(transcript_objs) {
         let enrollments = [];
         let courses = [];
         for(var i=0; i<transcript_objs.length; i++) {
@@ -70,14 +75,25 @@ var app = function() {
                 courses.push({course_name:course_name, course_description:course_description});
             };
         };
+        return [enrollments, courses];
+    };
+    self.fill_databases = function(transcript_objs) {
+        let results = self.make_enrollments_courses(transcript_objs);
+        let enrollments = results[0];
+        let courses = results[1];
         $.when(
             self.add_multiple_enrollments(enrollments), 
-            self.add_multiple_courses(courses)
-        ).then(function(response1, response2) {
-            return self.get_enrollments();
-        }).then(function(response) {
-            self.vue.enrollments = response.enrollments;
-        });
+            self.add_multiple_courses(courses),
+        );
+    };
+    self.update_databases = function(transcript_objs) {
+        let results = self.make_enrollments_courses(transcript_objs);
+        let enrollments = results[0];
+        let courses = results[1];
+        $.when(
+            self.update_multiple_enrollments(enrollments), 
+            self.add_multiple_courses(courses),
+        );
     };
     self.parse_doc = function(doc) {
         var transcript_objs = [];
@@ -194,8 +210,20 @@ var app = function() {
     };
 
 
+    // Other functions
+    self.is_transcript_loaded = function() {
+        return (self.vue.enrollments.find(self.is_user_id(self.vue.auth_user.id)) != null);
+    };
+
+
     // UI functions
-    self.try_upload_file = function() {
+    self.toggle_update_profile = function() {
+        self.vue.is_updating_profile = !self.vue.is_updating_profile;
+    };
+    self.toggle_update_transcript = function() {
+        self.vue.is_updating_transcript = !self.vue.is_updating_transcript;
+    };
+    self.upload_transcript = function() {
         let input = document.querySelector('#upload_transcript_file_input');
         let files = input.files;
         let file = files[0];
@@ -208,12 +236,37 @@ var app = function() {
                 doc.innerHTML = result_str;
                 let transcript_objs = self.parse_doc(doc);
                 self.fill_databases(transcript_objs);
+                $.when(self.get_enrollments()).done(function(response) {
+                    self.vue.enrollments = response.enrollments;
+                });
             };
         } else {
             alert('failed to load file');
         };
     };
-    self.try_update_profile = function() {
+    self.update_transcript = function() {
+        let input = document.querySelector('#upload_transcript_file_input');
+        let files = input.files;
+        let file = files[0];
+        if(file) {
+            let reader = new FileReader();
+            reader.readAsText(file);
+            reader.onloadend = function(event) {
+                let result_str = reader.result;
+                let doc = document.createElement('html');
+                doc.innerHTML = result_str;
+                let transcript_objs = self.parse_doc(doc);
+                $.when(self.update_databases(transcript_objs));
+                $.when(self.get_enrollments()).done(function(response) {
+                    self.vue.enrollments = response.enrollments;
+                    self.toggle_update_transcript();
+                });
+            };
+        } else {
+            alert('failed to load file');
+        };
+    };
+    self.click_update_profile = function() {
         let user = {
             first_name: document.querySelector('#first_name_input').value,
             last_name: document.querySelector('#last_name_input').value,
@@ -221,7 +274,10 @@ var app = function() {
             bio: (document.querySelector('#bio_input')).value,
             is_public: document.querySelector('#is_public_input').checked,
         };
-        self.update_profile(user);
+        $.when(self.update_profile(user)).done(function(response) {
+            self.vue.auth_user = response.auth_user;
+            self.toggle_update_profile();
+        });
     };
 
     
@@ -231,6 +287,8 @@ var app = function() {
         unsafeDelimiters: ['!{', '}'],
         data: {
             is_loaded: false,
+            is_updating_profile: false,
+            is_updating_transcript: false,
             auth_user: {},
             enrollments: [],
             current_quarter: '2018 Spring Quarter',
@@ -239,8 +297,13 @@ var app = function() {
             is_user_id: self.is_user_id,
             auth_user_enrollments: self.auth_user_enrollments,
 
-            upload_file: self.try_upload_file,
-            update_profile: self.try_update_profile,
+            is_transcript_loaded: self.is_transcript_loaded,
+
+            toggle_update_profile: self.toggle_update_profile,
+            toggle_update_transcript: self.toggle_update_transcript,
+            upload_transcript: self.upload_transcript,
+            click_update_profile: self.click_update_profile,
+            update_transcript: self.update_transcript,
         },
         computed: {
         },
