@@ -88,10 +88,12 @@ var app = function() {
         for(var i=0; i<enrollments.length; i++) {
             let user_id = enrollments[i].user_id;
             let user = self.vue.users.find(self.is_id(user_id));
-            let users_i = users.push({id:user_id, name:user.first_name+' '+user.last_name, quarter:enrollments[i].quarter}) - 1;
-            // alert(users_i);
-            if(enrollments[i].is_grade_public) {
-                users[users_i].grade = enrollments[i].grade;
+            if(user) {
+                let users_i = users.push({id:user_id, name:user.first_name+' '+user.last_name, quarter:enrollments[i].quarter}) - 1;
+                // alert(users_i);
+                if(enrollments[i].is_grade_public) {
+                    users[users_i].grade = enrollments[i].grade;
+                };
             };
         };
         return users;

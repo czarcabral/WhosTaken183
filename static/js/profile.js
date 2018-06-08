@@ -70,7 +70,14 @@ var app = function() {
                 courses.push({course_name:course_name, course_description:course_description});
             };
         };
-        $.when(self.add_multiple_enrollments(enrollments), self.add_multiple_courses(courses));
+        $.when(
+            self.add_multiple_enrollments(enrollments), 
+            self.add_multiple_courses(courses)
+        ).then(function(response1, response2) {
+            return self.get_enrollments();
+        }).then(function(response) {
+            self.vue.enrollments = response.enrollments;
+        });
     };
     self.parse_doc = function(doc) {
         var transcript_objs = [];
