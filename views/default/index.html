@@ -15,38 +15,40 @@
 
 {{block main}}
 <div id="vue-div" style="display:none">
-  <h6>Done</h6>
-  <p>As a user, I want to be able to upload my transcript so that I don't have to manually enter my info when someone asks me for my weekly schedule/academic standing.</p>
-  <p>As a user, I want to be able to make an account, so that I can save my info.</p>
-  <p>As a user, I want to be able to see the information on my transcript so that I can refer back to it easily whenever I want</p>
-  <p>As a user, I want to be able to discover other users who have taken this class before me, or are currently taking this class, so that I can contact them for help.</p>
-  <h6>Not Done</h6>
-  <p>As a user, I want to be able to be friends other users so that I can view their private info like schedules/grades.</p>
-  <p>As a user, I want to be able to see the current schedule of my classes, so that I can refer to my schedule easily</p>
-  <p>As a user, I want to be able to send other users messages (similar to email) but directly on the website so that I can contact them easily.</p>
-  <p>As an admin, I want to be able to see a list of users in my organization so that I can easily see my member's info</p>
-  <p>As an admin, I want to be able to find users in my org by recent quarter's gpa and cumulative gpa, so that I can see who has bad academic standing</p>
+  <div v-if="is_loaded">
+    <h6>Done</h6>
+    <p>As a user, I want to be able to upload my transcript so that I don't have to manually enter my info when someone asks me for my weekly schedule/academic standing.</p>
+    <p>As a user, I want to be able to make an account, so that I can save my info.</p>
+    <p>As a user, I want to be able to see the information on my transcript so that I can refer back to it easily whenever I want</p>
+    <p>As a user, I want to be able to discover other users who have taken this class before me, or are currently taking this class, so that I can contact them for help.</p>
+    <h6>Not Done</h6>
+    <p>As a user, I want to be able to be friends other users so that I can view their private info like schedules/grades.</p>
+    <p>As a user, I want to be able to see the current schedule of my classes, so that I can refer to my schedule easily</p>
+    <p>As a user, I want to be able to send other users messages (similar to email) but directly on the website so that I can contact them easily.</p>
+    <p>As an admin, I want to be able to see a list of users in my organization so that I can easily see my member's info</p>
+    <p>As an admin, I want to be able to find users in my org by recent quarter's gpa and cumulative gpa, so that I can see who has bad academic standing</p>
 
-  <h1>Current Courses:</h1>
-  <ul>
-    <li v-for="enrollment in auth_user_current_enrollments">
-      <span v-on:click="click_course(enrollment.id)"><b>${enrollment.course_name} - ${enrollment.course_description}</b></span>
-      <div v-if="clicked_courses.find(is_elem(enrollment.id))">        
-        <span>Currently Enrolled:</span>
-        <ul>
-          <li v-for="user in users_currently_enrolled(enrollment.course_name)">
+    <h1>Current Courses:</h1>
+    <ul>
+      <li v-for="enrollment in auth_user_current_enrollments()">
+        <span v-on:click="click_course(enrollment.id)"><b>${enrollment.course_name} - ${enrollment.course_description}</b></span>
+        <div v-if="clicked_courses.find(is_elem(enrollment.id))">        
+          <span>Currently Enrolled:</span>
+          <ul>
+            <li v-for="user in users_currently_enrolled(enrollment.course_name)">
+                <span>${user.name}</span> - <span>${user.quarter}</span> - <span>${user.grade}</span>
+            </li>
+          </ul>
+          <span>Past Enrolled:</span>
+          <ul>
+            <li v-for="user in users_past_enrolled(enrollment.course_name)">
               <span>${user.name}</span> - <span>${user.quarter}</span> - <span>${user.grade}</span>
-          </li>
-        </ul>
-        <span>Past Enrolled:</span>
-        <ul>
-          <li v-for="user in users_past_enrolled(enrollment.course_name)">
-            <span>${user.name}</span> - <span>${user.quarter}</span> - <span>${user.grade}</span>
-          </li>
-        </ul>
-      </div>
-    </li>
-  </ul>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
 </div>
 {{end main}}
 
