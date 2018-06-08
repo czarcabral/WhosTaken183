@@ -43,7 +43,46 @@ var app = function() {
     };
 
 
+    // search and filter predicates
+    self.is_elem = function(targ) {
+        return function(elem) { return elem == targ; };
+    };
+    self.is_id = function(id) {
+        return function(elem) { return elem.id == id; };
+    };
+    self.is_name = function(course_name) {
+        return function(elem) { return elem.name == course_name; };
+    };
+    self.is_course_name = function(course_name) {
+        return function(elem) { return elem.course_name == course_name; };
+    };
+    self.is_user_id = function(user_id) {
+        return function(elem) { return elem.user_id == user_id; };
+    };
+    self.is_not_user_id = function(user_id) {
+        return function(elem) { return elem.user_id != user_id; };
+    };
+    self.is_quarter = function(quarter) {
+        return function(elem) { return elem.quarter == quarter; };
+    };
+    self.is_not_quarter = function(quarter) {
+        return function(elem) { return elem.quarter != quarter; };
+    };
+
+
     // List rendering functions
+    self.auth_user_current_enrollments = function() {
+        let this_ = self.vue;
+        // query auth_user's enrollments
+        var enrollments = this_.enrollments.filter(self.is_user_id(this_.auth_user.id));
+        // query this quarter's enrollments
+        enrollments = enrollments.filter(self.is_quarter(this_.current_quarter));
+        for(var i=0; i<enrollments.length; i++) {
+            let course = this_.courses.find(self.is_name(enrollments[i].course_name));
+            enrollments[i].course_description = course.description;
+        };
+        return enrollments;
+    };
     self.users_enrolled = function(enrollments) {
         let users = [];
         for(var i=0; i<enrollments.length; i++) {
@@ -79,45 +118,6 @@ var app = function() {
         let users = self.users_enrolled(enrollments);
         return users;
     };
-    self.auth_user_current_enrollments = function() {
-        let this_ = self.vue;
-        // query auth_user's enrollments
-        var enrollments = this_.enrollments.filter(self.is_user_id(this_.auth_user.id));
-        // query this quarter's enrollments
-        enrollments = enrollments.filter(self.is_quarter(this_.current_quarter));
-        for(var i=0; i<enrollments.length; i++) {
-            let course = this_.courses.find(self.is_name(enrollments[i].course_name));
-            enrollments[i].course_description = course.description;
-        };
-        return enrollments;
-    };
-
-
-    // search and filter predicates
-    self.is_elem = function(targ) {
-        return function(elem) { return elem == targ; };
-    };
-    self.is_id = function(id) {
-        return function(elem) { return elem.id == id; };
-    };
-    self.is_name = function(course_name) {
-        return function(elem) { return elem.name == course_name; };
-    };
-    self.is_course_name = function(course_name) {
-        return function(elem) { return elem.course_name == course_name; };
-    };
-    self.is_user_id = function(user_id) {
-        return function(elem) { return elem.user_id == user_id; };
-    };
-    self.is_not_user_id = function(user_id) {
-        return function(elem) { return elem.user_id != user_id; };
-    };
-    self.is_quarter = function(quarter) {
-        return function(elem) { return elem.quarter == quarter; };
-    };
-    self.is_not_quarter = function(quarter) {
-        return function(elem) { return elem.quarter != quarter; };
-    };
 
 
     // UI functions
@@ -146,10 +146,11 @@ var app = function() {
         },
         methods: {
             is_elem: self.is_elem,
-            click_course: self.click_course,
+            auth_user_current_enrollments: self.auth_user_current_enrollments,
             users_currently_enrolled: self.users_currently_enrolled,
             users_past_enrolled: self.users_past_enrolled,
-            auth_user_current_enrollments: self.auth_user_current_enrollments,
+
+            click_course: self.click_course,
         },
         computed: {
         },

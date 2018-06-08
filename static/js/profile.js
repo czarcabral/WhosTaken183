@@ -48,6 +48,7 @@ var app = function() {
         ).done(function(response1, response2) {
             self.vue.auth_user = response1[0].auth_user;
             self.vue.enrollments = response2[0].enrollments;
+            self.vue.is_loaded = true;
         });
     };
     self.fill_databases = function(transcript_objs) {
@@ -177,6 +178,15 @@ var app = function() {
     };
 
 
+    // List rendering functions
+    self.auth_user_enrollments = function() {
+        let this_ = self.vue;
+        // query auth_user's enrollments
+        var enrollments = this_.enrollments.filter(self.is_user_id(this_.auth_user.id));
+        return enrollments;
+    };
+
+
     // UI functions
     self.try_upload_file = function() {
         let input = document.querySelector('#upload_transcript_file_input');
@@ -207,17 +217,21 @@ var app = function() {
         self.update_profile(user);
     };
 
+    
     self.vue = new Vue({
         el: "#vue-div",
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
+            is_loaded: false,
             auth_user: {},
             enrollments: [],
             current_quarter: '2018 Spring Quarter',
         },
         methods: {
             is_user_id: self.is_user_id,
+            auth_user_enrollments: self.auth_user_enrollments,
+
             upload_file: self.try_upload_file,
             update_profile: self.try_update_profile,
         },

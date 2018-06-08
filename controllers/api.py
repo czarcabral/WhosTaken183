@@ -1,5 +1,4 @@
 from gluon.utils import web2py_uuid
-import json
 
 def get_auth_user():
     auth_user = db(db.auth_user.id==get_auth_user_id()).select(

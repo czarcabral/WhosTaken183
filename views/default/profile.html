@@ -16,53 +16,55 @@
 
 {{block main}}
 <div id="vue-div" style="display:none" class="container padded">
-  <h3>Update your profile information:</h3>
-  <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="update_profile()">
-    <label for="first_name_input">First name: </label>
-    <input type="text" id="first_name_input" v-model="auth_user.first_name">
-    <label for="last_name_input">Last name: </label>
-    <input type="text" id="last_name_input" v-model="auth_user.last_name">
-    <label for="email_input">Email: </label>
-    <input type="email" id="email_input" v-model="auth_user.email">
-    <label for="bio_input">Bio: </label>
-    <textarea id="bio_input" v-model="auth_user.bio"></textarea>
-    <label for="is_public_input">Make profile public: </label>
-    <input type="checkbox" id="is_public_input" v-model="auth_user.is_public"><br>
-    <span v-if="auth_user.is_public" for="is_public_input">Profile is publicly visible</span>
-    <span v-else for="is_public_input">Profile is only seen by shared organization members</span>
-    <br><br>
-    <button type="submit">Confirm</button>
-  </form>
-  <div v-if="enrollments.find(is_user_id(auth_user.id))">
-    <h3>Your Courses:</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Quarter</th>
-          <th>Name</th>
-          <th>Grade</th>
-          <th>Is Grade Public</th>
-          <th>Is Course Public</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="enrollment in enrollments">
-          <td>${enrollment.quarter}</td>
-          <td>${enrollment.name}</td>
-          <td>${enrollment.grade}</td>
-          <td>${enrollment.is_grade_public}</td>
-          <td>${enrollment.is_course_public}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div v-else>
-    <h3>You have not yet uploaded a transcript to our database.</h3>
-    <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="upload_file()">
-      <label for="upload_transcript_file_input">Upload your transcript (.html) file:</label>
-      <input type="file" id="upload_transcript_file_input" accept=".html, .htm">
-      <button type="submit">Upload</button>
+  <div v-if="is_loaded">
+    <h3>Update your profile information:</h3>
+    <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="update_profile()">
+      <label for="first_name_input">First name: </label>
+      <input type="text" id="first_name_input" v-model="auth_user.first_name">
+      <label for="last_name_input">Last name: </label>
+      <input type="text" id="last_name_input" v-model="auth_user.last_name">
+      <label for="email_input">Email: </label>
+      <input type="email" id="email_input" v-model="auth_user.email">
+      <label for="bio_input">Bio: </label>
+      <textarea id="bio_input" v-model="auth_user.bio"></textarea>
+      <label for="is_public_input">Make profile public: </label>
+      <input type="checkbox" id="is_public_input" v-model="auth_user.is_public"><br>
+      <span v-if="auth_user.is_public" for="is_public_input">Profile is publicly visible</span>
+      <span v-else for="is_public_input">Profile is only seen by shared organization members</span>
+      <br><br>
+      <button type="submit">Confirm</button>
     </form>
+    <div v-if="enrollments.find(is_user_id(auth_user.id))">
+      <h3>Your Courses:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Quarter</th>
+            <th>Name</th>
+            <th>Grade</th>
+            <th>Is Grade Public</th>
+            <th>Is Course Public</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="enrollment in auth_user_enrollments()">
+            <td>${enrollment.quarter}</td>
+            <td>${enrollment.course_name}</td>
+            <td>${enrollment.grade}</td>
+            <td>${enrollment.is_grade_public}</td>
+            <td>${enrollment.is_course_public}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div v-else>
+      <h3>You have not yet uploaded a transcript to our database.</h3>
+      <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="upload_file()">
+        <label for="upload_transcript_file_input">Upload your transcript (.html) file:</label>
+        <input type="file" id="upload_transcript_file_input" accept=".html, .htm">
+        <button type="submit">Upload</button>
+      </form>
+    </div>
   </div>
 </div>
 {{end main}}
