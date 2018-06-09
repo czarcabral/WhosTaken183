@@ -6,13 +6,17 @@ def index():
 
 def profile():
     if not auth.user : redirect(URL('user'))
-    if (not request.args) : redirect(URL('profile', args=[auth.user.id]))
+    if (not request.args) : redirect(URL('profile', args=[get_auth_user_id()]))
     profile_id = request.args(0)
     myquery = (db.auth_user.id == profile_id)
     user = db(myquery).select().first()
     if(user == None):
         raise HTTP(404, "ERROR: user not found")
     return dict(profile_id=profile_id)
+
+def account():
+    if not auth.user : redirect(URL('user'))
+    return dict(change_password_form=auth.change_password())
 
 def user():
     if request.args(0) == 'register' :
