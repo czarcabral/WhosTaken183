@@ -1,0 +1,30 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<script>
+  var logout_url = "{{=URL('default', 'user', args=['logout'])}}";
+  var delete_account_url = "{{=URL('api', 'delete_account')}}";
+</script>
+{{end head}}
+
+{{block header}}
+<h1 class="center">Welcome to ACCOUNT</h1>
+{{end header}}
+
+{{block main}}
+<div id="vue-div" style="display:none">
+  <div v-if="is_loaded">
+    <h3>Change Password</h3>
+    {{=change_password_form}}
+    <h3>Delete Account</h3>
+    <button v-on:click="click_delete_account()">Delete your account</button>
+  </div>
+</div>
+{{end main}}
+
+{{block footer}}
+{{end footer}}
+
+{{block js}}
+<script src="{{=URL('static', 'js/account.js')}}"></script>
+{{end js}}

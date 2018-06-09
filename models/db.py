@@ -66,7 +66,7 @@ def user_bar():
         bar = SPAN('Hello '+auth.user.first_name, ' | ', logout, _class='auth_navbar')
     else:
         login = A('Log In', _href=URL('default', 'user', args='login'))
-        register=A('Sign Up',_href=URL('default', 'user', args='register'))
+        register = A('Sign Up',_href=URL('default', 'user', args='register'))
         bar = SPAN('', login, '', register, _class='auth_navbar')
     return bar
 

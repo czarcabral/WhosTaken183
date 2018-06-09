@@ -37,11 +37,11 @@ def get_users():
 def get_enrollments():
     myquery = (
         (db.enrollments.is_course_public == True) | 
-        (db.enrollments.user_id == auth.user.id)
+        (db.enrollments.user_id == get_auth_user_id())
     )
     enrollments = db(myquery).select()
     for enrollment in enrollments:
-        if(enrollment.is_grade_public == False) and (enrollment.user_id != auth.user.id) :
+        if(enrollment.is_grade_public == False) and (enrollment.user_id != get_auth_user_id()) :
             enrollment.update(grade='PRIVATE')
     return response.json(dict(enrollments=enrollments))
 
@@ -109,3 +109,8 @@ def update_profile():
         is_public=request.vars.is_public
     )
     return get_auth_user()
+
+def delete_account():
+    db(db.auth_user.id == get_auth_user_id()).delete()
+    db(db.enrollments.user_id == get_auth_user_id()).delete()
+    return response.json(dict())
