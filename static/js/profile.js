@@ -9,6 +9,11 @@ var app = function() {
             alert('ERROR - getJSON request (get_auth_user_url) failed');
         });
     };
+    self.get_profile_user = function(profile_id) {
+        return $.post(get_profile_user_url, {profile_id:profile_id}).fail(function() {
+            alert('ERROR - post request (get_profile_user_url) failed');
+        });
+    };
     self.get_enrollments = function() {
         return $.getJSON(get_enrollments_url).fail(function() {
             alert('ERROR - getJSON request (get_enrollments_url) failed');
@@ -47,10 +52,13 @@ var app = function() {
 
     // Private Helper functions
     self.init_data = function() {
-        $.when(self.get_auth_user()).done(function(response) {
-            self.vue.profile_user = profile_user;
-            self.vue.auth_user = response.auth_user;
-            if(profile_user.id == response.auth_user.id) {
+        $.when(
+            self.get_auth_user(), 
+            self.get_profile_user(profile_id),
+        ).done(function(response1, response2) {
+            self.vue.auth_user = response1[0].auth_user;
+            self.vue.profile_user = response2[0].profile_user;
+            if(response2[0].profile_user.id == response1[0].auth_user.id) {
                 self.vue.is_auth_user = true;
                 $.when(self.get_enrollments()).done(function(response) {
                     self.vue.enrollments = response.enrollments;

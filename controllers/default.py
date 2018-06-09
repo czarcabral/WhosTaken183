@@ -7,19 +7,12 @@ def index():
 def profile():
     if not auth.user : redirect(URL('user'))
     if (not request.args) : redirect(URL('profile', args=[auth.user.id]))
-    myid = request.args(0)
-    myquery = (db.auth_user.id == myid)
+    profile_id = request.args(0)
+    myquery = (db.auth_user.id == profile_id)
     user = db(myquery).select().first()
     if(user == None):
         raise HTTP(404, "ERROR: user not found")
-    return dict(
-        id=user.id, 
-        first_name=user.first_name, 
-        last_name=user.last_name, 
-        email=user.email,
-        bio=user.bio,
-        is_public=user.is_public,
-    )
+    return dict(profile_id=profile_id)
 
 def user():
     if request.args(0) == 'register' :

@@ -2,15 +2,9 @@
 
 {{block head}}
 <script>
-  var profile_user = {
-    id:{{=id}},
-    first_name:"{{=first_name}}",
-    last_name:"{{=last_name}}",
-    email:"{{=email}}",
-    bio:"{{=bio}}",
-    is_public:eval("{{=is_public}}".toLowerCase()),
-  };
+  var profile_id = {{=profile_id}};
   var get_auth_user_url = "{{=URL('api', 'get_auth_user')}}";
+  var get_profile_user_url = "{{=URL('api', 'get_profile_user')}}";
   var get_enrollments_url = "{{=URL('api', 'get_enrollments')}}";
   var add_multiple_enrollments_url = "{{=URL('api', 'add_multiple_enrollments')}}";
   var add_multiple_courses_url = "{{=URL('api', 'add_multiple_courses')}}";

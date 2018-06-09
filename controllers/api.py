@@ -12,6 +12,18 @@ def get_auth_user():
     ).first()
     return response.json(dict(auth_user=auth_user))
 
+def get_profile_user():
+    profile_id = request.vars.profile_id
+    profile_user = db(db.auth_user.id==profile_id).select(
+        db.auth_user.id, 
+        db.auth_user.first_name, 
+        db.auth_user.last_name, 
+        db.auth_user.email, 
+        db.auth_user.bio, 
+        db.auth_user.is_public
+    ).first()
+    return response.json(dict(profile_user=profile_user))
+
 def get_users():
     users = db(db.auth_user.is_public==True).select(
         db.auth_user.id, 
