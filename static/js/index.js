@@ -33,7 +33,7 @@ var app = function() {
             self.get_users(), 
             self.get_enrollments(), 
             self.get_courses()
-        ).done(function(response1, response2, response3, response4) { // <-- Note: if .when only has one function, then .done has the response.data
+        ).done(function(response1, response2, response3, response4) { // note: if more than one param, use response[0].users else response.users
             self.vue.auth_user = response1[0].auth_user;
             self.vue.users = response2[0].users;
             self.vue.enrollments = response3[0].enrollments;
@@ -90,7 +90,6 @@ var app = function() {
             let user = self.vue.users.find(self.is_id(user_id));
             if(user) {
                 let users_i = users.push({id:user_id, name:user.first_name+' '+user.last_name, quarter:enrollments[i].quarter}) - 1;
-                // alert(users_i);
                 if(enrollments[i].is_grade_public) {
                     users[users_i].grade = enrollments[i].grade;
                 };
@@ -137,6 +136,9 @@ var app = function() {
             self.vue.clicked_courses.splice(clicked_course_i, 1);
         };
     };
+    self.click_user = function(id) {
+        window.location.href = profile_url+'/'+id;
+    };
 
 
     self.vue = new Vue({
@@ -161,6 +163,7 @@ var app = function() {
             is_transcript_loaded: self.is_transcript_loaded,
 
             click_course: self.click_course,
+            click_user: self.click_user,
         },
         computed: {
         },

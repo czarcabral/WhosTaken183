@@ -2,6 +2,14 @@
 
 {{block head}}
 <script>
+  var profile_user = {
+    id:{{=id}},
+    first_name:"{{=first_name}}",
+    last_name:"{{=last_name}}",
+    email:"{{=email}}",
+    bio:"{{=bio}}",
+    is_public:eval("{{=is_public}}".toLowerCase()),
+  };
   var get_auth_user_url = "{{=URL('api', 'get_auth_user')}}";
   var get_enrollments_url = "{{=URL('api', 'get_enrollments')}}";
   var add_multiple_enrollments_url = "{{=URL('api', 'add_multiple_enrollments')}}";
@@ -22,16 +30,16 @@
       <h3>Update your profile information:</h3>
       <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="click_update_profile()">
         <label for="first_name_input">First name: </label>
-        <input type="text" id="first_name_input" v-bind:value="auth_user.first_name">
+        <input type="text" id="first_name_input" v-bind:value="profile_user.first_name">
         <label for="last_name_input">Last name: </label>
-        <input type="text" id="last_name_input" v-bind:value="auth_user.last_name">
+        <input type="text" id="last_name_input" v-bind:value="profile_user.last_name">
         <label for="email_input">Email: </label>
-        <input type="email" id="email_input" v-bind:value="auth_user.email">
+        <input type="email" id="email_input" v-bind:value="profile_user.email">
         <label for="bio_input">Bio: </label>
-        <textarea id="bio_input" v-bind:value="auth_user.bio"></textarea>
+        <textarea id="bio_input" v-bind:value="profile_user.bio"></textarea>
         <label for="is_public_input">Make profile public: </label>
-        <input type="checkbox" id="is_public_input" v-model="auth_user.is_public"><br>
-        <span v-if="auth_user.is_public" for="is_public_input">Profile is publicly visible</span>
+        <input type="checkbox" id="is_public_input" v-model="profile_user.is_public"><br>
+        <span v-if="profile_user.is_public" for="is_public_input">Profile is publicly visible</span>
         <span v-else for="is_public_input">Profile is only seen by shared organization members</span>
         <br><br>
         <button type="submit">Confirm</button>
@@ -39,58 +47,64 @@
       <button type="button" v-on:click="toggle_update_profile()">Cancel</button>
     </div>
     <div v-else>
-      <h3>Profile:</h3>
-      <p><span><b>Name:</b></span> <span>${auth_user.first_name}</span> <span>${auth_user.last_name}</span></p>
-      <p><span><b>Email:</b></span> <span>${auth_user.email}</span></p>
-      <p><span><b>Bio:</b></span> <span>${auth_user.bio}</span></p>
-      <p><span><b>Privacy:</b></span> 
-        <span v-if="auth_user.is_public">Public</span>
-        <span v-else>Private</span>
-      </p>
-      <button type="button" v-on:click="toggle_update_profile()">Update Profile</button>
+      <div>
+        <h3>Profile:</h3>
+        <p><span><b>Name:</b></span> <span>${profile_user.first_name}</span> <span>${profile_user.last_name}</span></p>
+        <p><span><b>Email:</b></span> <span>${profile_user.email}</span></p>
+        <p><span><b>Bio:</b></span> <span>${profile_user.bio}</span></p>
+        <p><span><b>Privacy:</b></span> 
+          <span v-if="profile_user.is_public">Public</span>
+          <span v-else>Private</span>
+        </p>
+      </div>
+      <div v-if="is_auth_user">
+        <button type="button" v-on:click="toggle_update_profile()">Update Profile</button>
+      </div>
     </div>
-    <div v-if="is_transcript_loaded()">
-      <div v-if="is_updating_transcript">
-        <h3>Update your transcript information:</h3>
-        <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="update_transcript()">
+    <div v-if="is_auth_user">
+      <div v-if="is_transcript_loaded() && is_auth_user">
+        <div v-if="is_updating_transcript">
+          <h3>Update your transcript information:</h3>
+          <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="update_transcript()">
+            <label for="upload_transcript_file_input">Upload your transcript (.html) file:</label>
+            <input type="file" id="upload_transcript_file_input" accept=".html, .htm">
+            <button type="submit">Upload</button>
+          </form>
+          <button type="button" v-on:click="toggle_update_transcript()">Cancel</button>
+        </div>
+        <div v-else>
+          <h3>Your Courses:</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Quarter</th>
+                <th>Name</th>
+                <th>Grade</th>
+                <th>Is Grade Public</th>
+                <th>Is Course Public</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="enrollment in auth_user_enrollments()">
+                <td>${enrollment.quarter}</td>
+                <td>${enrollment.course_name}</td>
+                <td>${enrollment.grade}</td>
+                <td>${enrollment.is_grade_public}</td>
+                <td>${enrollment.is_course_public}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" v-on:click="toggle_update_transcript()">Update Transcript</button>
+        </div>
+      </div>
+      <div v-else>
+        <h3>You have not yet uploaded a transcript to our database.</h3>
+        <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="upload_transcript()">
           <label for="upload_transcript_file_input">Upload your transcript (.html) file:</label>
           <input type="file" id="upload_transcript_file_input" accept=".html, .htm">
           <button type="submit">Upload</button>
         </form>
-        <button type="button" v-on:click="toggle_update_transcript()">Cancel</button>
       </div>
-      <div v-else>
-        <h3>Your Courses:</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Quarter</th>
-              <th>Name</th>
-              <th>Grade</th>
-              <th>Is Grade Public</th>
-              <th>Is Course Public</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="enrollment in auth_user_enrollments()">
-              <td>${enrollment.quarter}</td>
-              <td>${enrollment.course_name}</td>
-              <td>${enrollment.grade}</td>
-              <td>${enrollment.is_grade_public}</td>
-              <td>${enrollment.is_course_public}</td>
-            </tr>
-          </tbody>
-        </table>
-        <button type="button" v-on:click="toggle_update_transcript()">Update Transcript</button>
-      </div>
-    </div>
-    <div v-else>
-      <h3>You have not yet uploaded a transcript to our database.</h3>
-      <form action="#" enctype="multipart/form-data" method="post" v-on:submit.prevent="upload_transcript()">
-        <label for="upload_transcript_file_input">Upload your transcript (.html) file:</label>
-        <input type="file" id="upload_transcript_file_input" accept=".html, .htm">
-        <button type="submit">Upload</button>
-      </form>
     </div>
   </div>
 </div>

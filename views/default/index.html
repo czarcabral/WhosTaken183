@@ -2,6 +2,7 @@
 
 {{block head}}
 <script>
+  var profile_url = "{{=URL('default', 'profile')}}";
   var get_auth_user_url = "{{=URL('api', 'get_auth_user')}}";
   var get_users_url = "{{=URL('api', 'get_users')}}";
   var get_enrollments_url = "{{=URL('api', 'get_enrollments')}}";
@@ -37,13 +38,13 @@
           <div v-if="clicked_courses.find(is_elem(enrollment.id))">        
             <span>Currently Enrolled:</span>
             <ul>
-              <li v-for="user in users_currently_enrolled(enrollment.course_name)">
+              <li v-for="user in users_currently_enrolled(enrollment.course_name)" v-on:click="click_user(user.id)">
                   <span>${user.name}</span> - <span>${user.quarter}</span> - <span>${user.grade}</span>
               </li>
             </ul>
             <span>Past Enrolled:</span>
             <ul>
-              <li v-for="user in users_past_enrolled(enrollment.course_name)">
+              <li v-for="user in users_past_enrolled(enrollment.course_name)" v-on:click="click_user(user.id)">
                 <span>${user.name}</span> - <span>${user.quarter}</span> - <span>${user.grade}</span>
               </li>
             </ul>
