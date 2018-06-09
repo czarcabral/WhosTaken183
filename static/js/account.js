@@ -1,19 +1,21 @@
 var app = function() {
     var self = {};
     Vue.config.silent = false;
-    self.delete_account = function() {
-        return $.getJSON(delete_account_url).fail(function() {
-            alert('ERROR - getJSON request (delete_account_url) failed');
-        });
-    };
+
+    // Private Helper functions
     self.init_data = function() {
         // self.vue.is_loaded = true;
     };
+
+
+    // UI functions
     self.click_delete_account = function() {
-        // $.when(self.delete_account()).then(function() {
+        // $.when(delete_account(delete_account_url)).then(function() {
         //     window.location.href = logout_url;
         // });
     };
+
+
     self.vue = new Vue({
         el: "#vue-div",
         delimiters: ['${', '}'],
