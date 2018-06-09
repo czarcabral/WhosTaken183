@@ -2,65 +2,17 @@ var app = function() {
     var self = {};
     Vue.config.silent = false;
 
-
-    // API Calls
-    self.get_auth_user = function() {
-        return $.getJSON(get_auth_user_url).fail(function() {
-            alert('ERROR - getJSON request (get_auth_user_url) failed');
-        });
-    };
-    self.get_profile_user = function(profile_id) {
-        return $.post(get_profile_user_url, {profile_id:profile_id}).fail(function() {
-            alert('ERROR - post request (get_profile_user_url) failed');
-        });
-    };
-    self.get_enrollments = function() {
-        return $.getJSON(get_enrollments_url).fail(function() {
-            alert('ERROR - getJSON request (get_enrollments_url) failed');
-        });
-    };
-    self.add_multiple_enrollments = function(enrollments) {
-        return $.post(add_multiple_enrollments_url, {enrollments:JSON.stringify(enrollments)}).fail(function() {
-            alert('ERROR - post request (add_multiple_enrollments_url) failed');
-        });
-    };
-    self.add_multiple_courses = function(courses) {
-        return $.post(add_multiple_courses_url, {courses:JSON.stringify(courses)}).fail(function() {
-            alert('ERROR - post request (add_multiple_courses_url) failed');
-        });
-    };
-    self.update_multiple_enrollments = function(enrollments) {
-        return $.post(update_multiple_enrollments_url, {enrollments:JSON.stringify(enrollments)}).fail(function() {
-            alert('ERROR - post request (update_multiple_enrollments_url) failed');
-        });
-    };
-    self.update_profile = function(user) {
-        return $.post(update_profile_url, 
-            {
-                id: user.user_id,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                email: user.email,
-                bio: user.bio,
-                is_public: user.is_public,
-            }
-        ).fail(function() {
-            alert('ERROR - post request (update_profile_url) failed');
-        });
-    }
-
-
     // Private Helper functions
     self.init_data = function() {
         $.when(
-            self.get_auth_user(), 
-            self.get_profile_user(profile_id),
+            get_auth_user(get_auth_user_url), 
+            get_profile_user(get_profile_user_url, profile_id),
         ).done(function(response1, response2) {
             self.vue.auth_user = response1[0].auth_user;
             self.vue.profile_user = response2[0].profile_user;
             if(response2[0].profile_user.id == response1[0].auth_user.id) {
                 self.vue.is_auth_user = true;
-                $.when(self.get_enrollments()).done(function(response) {
+                $.when(get_enrollments(get_enrollments_url)).done(function(response) {
                     self.vue.enrollments = response.enrollments;
                 });
             };
@@ -93,10 +45,10 @@ var app = function() {
         let enrollments = results[0];
         let courses = results[1];
         $.when(
-            self.add_multiple_enrollments(enrollments), 
-            self.add_multiple_courses(courses),
+            add_multiple_enrollments(add_multiple_enrollments_url, enrollments), 
+            add_multiple_courses(add_multiple_courses_url, courses),
         ).then(function() {
-            return self.get_enrollments();
+            return get_enrollments(get_enrollments_url);
         }).then(function(response) {
             self.vue.enrollments = response.enrollments;
         });
@@ -106,10 +58,10 @@ var app = function() {
         let enrollments = results[0];
         let courses = results[1];
         $.when(
-            self.update_multiple_enrollments(enrollments), 
-            self.add_multiple_courses(courses),
+            update_multiple_enrollments(update_multiple_enrollments_url, enrollments), 
+            add_multiple_courses(add_multiple_courses_url, courses),
         ).then(function() {
-            return self.get_enrollments();
+            return get_enrollments(get_enrollments_url);
         }).then(function(response) {
             self.vue.enrollments = response.enrollments;
             self.toggle_update_transcript();
@@ -215,24 +167,18 @@ var app = function() {
     };
 
 
-    // search and filter predicates
-    self.is_user_id = function(user_id) {
-        return function(elem) { return elem.user_id == user_id; };
-    };
-
-
     // List rendering functions
     self.auth_user_enrollments = function() {
         let this_ = self.vue;
         // query auth_user's enrollments
-        var enrollments = this_.enrollments.filter(self.is_user_id(this_.auth_user.id));
+        var enrollments = this_.enrollments.filter(is_user_id(this_.auth_user.id));
         return enrollments;
     };
 
 
     // Other functions
     self.is_transcript_loaded = function() {
-        return (self.vue.enrollments.find(self.is_user_id(self.vue.auth_user.id)) != null);
+        return (self.vue.enrollments.find(is_user_id(self.vue.auth_user.id)) != null);
     };
 
 
@@ -287,7 +233,7 @@ var app = function() {
             bio: ((document.querySelector('#bio_input')).value).trim(),
             is_public: document.querySelector('#is_public_input').checked,
         };
-        $.when(self.update_profile(user)).done(function(response) {
+        $.when(update_profile(update_profile_url, user)).done(function(response) {
             self.vue.auth_user = response.auth_user;
             self.vue.profile_user = response.auth_user;
             self.toggle_update_profile();
@@ -310,7 +256,7 @@ var app = function() {
             current_quarter: '2018 Spring Quarter',
         },
         methods: {
-            is_user_id: self.is_user_id,
+            is_user_id: is_user_id,
             auth_user_enrollments: self.auth_user_enrollments,
 
             is_transcript_loaded: self.is_transcript_loaded,
