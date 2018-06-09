@@ -1,4 +1,5 @@
 from gluon.utils import web2py_uuid
+import json
 
 def get_auth_user():
     auth_user = db(db.auth_user.id==get_auth_user_id()).select(
@@ -10,6 +11,18 @@ def get_auth_user():
         db.auth_user.is_public
     ).first()
     return response.json(dict(auth_user=auth_user))
+
+def get_profile_user():
+    profile_id = request.vars.profile_id
+    profile_user = db(db.auth_user.id==profile_id).select(
+        db.auth_user.id, 
+        db.auth_user.first_name, 
+        db.auth_user.last_name, 
+        db.auth_user.email, 
+        db.auth_user.bio, 
+        db.auth_user.is_public
+    ).first()
+    return response.json(dict(profile_user=profile_user))
 
 def get_users():
     users = db(db.auth_user.is_public==True).select(
@@ -60,7 +73,7 @@ def add_course(course):
         name=name,
         description=description,
     )
-    return dict()
+    return response.json(dict())
 
 def add_multiple_enrollments():
     enrollments = eval(request.vars.enrollments)
@@ -82,6 +95,11 @@ def update_multiple_enrollments():
     return response.json(dict())
 
 def update_profile():
+    auth.user.first_name = request.vars.first_name
+    auth.user.last_name = request.vars.last_name
+    auth.user.email_name = request.vars.email_name
+    auth.user.bio_name = request.vars.bio_name
+    auth.user.is_public = request.vars.is_public
     db.auth_user.update_or_insert(
         db.auth_user.id == get_auth_user_id(),
         first_name=request.vars.first_name,

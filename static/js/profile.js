@@ -9,6 +9,11 @@ var app = function() {
             alert('ERROR - getJSON request (get_auth_user_url) failed');
         });
     };
+    self.get_profile_user = function(profile_id) {
+        return $.post(get_profile_user_url, {profile_id:profile_id}).fail(function() {
+            alert('ERROR - post request (get_profile_user_url) failed');
+        });
+    };
     self.get_enrollments = function() {
         return $.getJSON(get_enrollments_url).fail(function() {
             alert('ERROR - getJSON request (get_enrollments_url) failed');
@@ -48,11 +53,17 @@ var app = function() {
     // Private Helper functions
     self.init_data = function() {
         $.when(
-            self.get_auth_user(),
-            self.get_enrollments(),
+            self.get_auth_user(), 
+            self.get_profile_user(profile_id),
         ).done(function(response1, response2) {
             self.vue.auth_user = response1[0].auth_user;
-            self.vue.enrollments = response2[0].enrollments;
+            self.vue.profile_user = response2[0].profile_user;
+            if(response2[0].profile_user.id == response1[0].auth_user.id) {
+                self.vue.is_auth_user = true;
+                $.when(self.get_enrollments()).done(function(response) {
+                    self.vue.enrollments = response.enrollments;
+                });
+            };
             self.vue.is_loaded = true;
         });
     };
@@ -270,14 +281,15 @@ var app = function() {
     };
     self.click_update_profile = function() {
         let user = {
-            first_name: document.querySelector('#first_name_input').value,
-            last_name: document.querySelector('#last_name_input').value,
-            email: document.querySelector('#email_input').value,
-            bio: (document.querySelector('#bio_input')).value,
+            first_name: (document.querySelector('#first_name_input').value).trim(),
+            last_name: (document.querySelector('#last_name_input').value).trim(),
+            email: (document.querySelector('#email_input').value).trim(),
+            bio: ((document.querySelector('#bio_input')).value).trim(),
             is_public: document.querySelector('#is_public_input').checked,
         };
         $.when(self.update_profile(user)).done(function(response) {
             self.vue.auth_user = response.auth_user;
+            self.vue.profile_user = response.auth_user;
             self.toggle_update_profile();
         });
     };
@@ -289,9 +301,11 @@ var app = function() {
         unsafeDelimiters: ['!{', '}'],
         data: {
             is_loaded: false,
+            is_auth_user: false,
             is_updating_profile: false,
             is_updating_transcript: false,
             auth_user: {},
+            profile_user: {},
             enrollments: [],
             current_quarter: '2018 Spring Quarter',
         },

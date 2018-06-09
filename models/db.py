@@ -44,7 +44,7 @@ service = Service()
 plugins = PluginManager()
 
 auth.settings.extra_fields['auth_user'] = [
-    Field('bio', type='text', default=None),
+    Field('bio', default=''),
     Field('is_public', type='boolean', default=True),
 ]
 auth.define_tables(username=False, signature=False)
@@ -52,6 +52,8 @@ auth.define_tables(username=False, signature=False)
 auth.settings.registration_requires_verification = False
 auth.settings.registration_requires_approval = False
 auth.settings.reset_password_requires_verification = False
+db.auth_user.first_name.requires = [CLEANUP(''), IS_NOT_EMPTY(error_message=auth.messages.is_empty)]
+db.auth_user.last_name.requires = [CLEANUP(''), IS_NOT_EMPTY(error_message=auth.messages.is_empty)]
 
 auth.settings.actions_disabled.append('verify_email')
 auth.settings.actions_disabled.append('retrieve_username')
