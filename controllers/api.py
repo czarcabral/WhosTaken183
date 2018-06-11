@@ -126,3 +126,156 @@ def delete_account():
     db(db.auth_user.id == get_auth_user_id()).delete()
     db(db.enrollments.user_id == get_auth_user_id()).delete()
     return response.json(dict())
+
+def get_messages():
+    # print("HI")
+    start_idx=int(request.vars.start_idx) if request.vars.start_idx is not None else 0
+    end_idx=int(request.vars.end_idx) if request.vars.end_idx is not None else 0
+    messages = []
+    has_more = False
+    # first_login = True
+    check=db().select(db.messages.ALL)
+    # db.users.truncate()
+    # db.messages.truncate()
+    rows=db().select(db.messages.ALL, limitby=(start_idx, end_idx + 1), orderby=~db.messages.updated_on)
+    for i,r in enumerate(rows):
+        # print(r.user_email)
+        if i < end_idx - start_idx:
+            t= dict(
+                id=r.id,
+                user_name=r.user_name,
+                user_email=r.user_email,
+                subject=r.subject,
+                receiver=r.receiver,
+                updated_on=r.updated_on,
+                sender_deleted=r.sender_deleted,
+                receiver_deleted=r.receiver_deleted,
+                message=r.body,
+                is_viewing=r.is_viewing,
+                has_read=r.has_read,
+                is_replying=r.is_replying
+            )
+            messages.append(t)
+        else: 
+            has_more=True
+    logged_in = auth.user_id is not None
+    current_user=-1
+    # print(messages[0].subject)
+    auth_name=""
+    auth_email=""
+    if logged_in:
+        current_user=auth.user_id
+        auth_name = auth.user.first_name + " " + auth.user.last_name
+        auth_email=auth.user.email
+    return response.json(dict(
+        messages=messages,
+        has_more=has_more,
+        logged_in=logged_in,
+        current_user=current_user,
+        auth_name=auth_name,
+        auth_email=auth_email
+    ))
+
+def get_users2():
+    # print("HI")
+    start_idx=int(request.vars.start_idx) if request.vars.start_idx is not None else 0
+    end_idx=int(request.vars.end_idx) if request.vars.end_idx is not None else 0
+    users_all = []
+    has_more = False
+    first_login = True
+    check=db().select(db.users.ALL)
+    # db.users.truncate()
+    if auth.user is not None:
+        for i,r in enumerate(check):
+            if auth.user.email == r.user_email:
+                first_login=False
+                break
+        if first_login is True:
+            add_user()
+    rows=db().select(db.users.ALL, limitby=(start_idx, end_idx + 1))
+    for i,r in enumerate(rows):
+        print(r.user_email)
+        if i < end_idx - start_idx:
+            t= dict(
+                id=r.id,
+                user_name=r.user_name,
+                user_email=r.user_email,
+                user_id=r.user_id,
+            )
+            users_all.append(t)
+        else: 
+            has_more=True
+    print(len(users_all))
+    logged_in = auth.user_id is not None
+    current_user=-1
+    auth_name=""
+    if logged_in:
+        current_user=auth.user_id
+        auth_name = auth.user.first_name + " " + auth.user.last_name
+    return response.json(dict(
+        users_all=users_all,
+        has_more=has_more,
+        logged_in=logged_in,
+        current_user=current_user,
+        auth_name=auth_name
+    ))
+
+def add_user():
+    db.users.insert(
+        user_email=auth.user.email,
+        user_name=auth.user.first_name + " " + auth.user.last_name,
+        user_id=auth.user_id
+    )
+
+@auth.requires_signature()
+def add_message():
+    print("in add")
+    # db.messages.truncate()
+    # print(request.vars.sender)
+    # print(request.vars.subject)
+    t_id = db.messages.insert(
+        receiver=request.vars.receiver,
+        subject=request.vars.subject,
+        body=request.vars.message,
+        user_name=request.vars.auth_name,
+        has_read=False
+    )
+    t = db.messages(t_id)
+    # print("message added")
+    redirect(URL('default','index'))
+    return response.json(dict(messages=t))
+
+@auth.requires_signature()
+def toggle_read():
+    if request.vars.message_id is not None:
+        q = ((db.messages.id == request.vars.message_id))
+    row = db(q).select().first()
+    # print(request.vars.price)
+    row.update_record(has_read=True)
+    return "ok"
+
+@auth.requires_signature()
+def delete_message():
+    if request.vars.message_id is not None:
+        q = ((db.messages.id == request.vars.message_id))
+        db(q).delete()
+    # db(db.post.id == request.vars.post_id).delete()
+    return "ok"
+
+@auth.requires_signature()
+def reply_message():
+    # print("in add")
+    # db.messages.truncate()
+    # print(request.vars.sender)
+    print(request.vars.message)
+    t_id = db.messages.insert(
+        receiver=request.vars.receiver,
+        subject=request.vars.subject,
+        body=request.vars.message,
+        user_name=request.vars.auth_name,
+        has_read=False
+    )
+    t = db.messages(t_id)
+    # print("message added")
+    # redirect(URL('default','index'))
+    return response.json(dict(messages=t))

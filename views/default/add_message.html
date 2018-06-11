@@ -1,0 +1,40 @@
+{{extend 'layout.html'}}
+{{block head}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+	
+  var add_message_url="{{=URL('api', 'add_message', user_signature=True)}}";
+  var index_url = "{{=URL('index')}}";
+  var users_url="{{=URL('api', 'get_users2')}}";
+  var messages_url="{{=URL('api', 'get_messages')}}";
+</script>
+{{end}}
+
+<div class="mycontent">
+	<div id="vue-div" class="display:none">
+	    <h1>New Message</h1>
+
+	    <div class="form-group" id="send_to">
+	        <div>
+	            <input class="form-control string" v-model="receiver" placeholder="Send to" type="text" />
+	            <span class="help-block"></span>
+	        </div>
+	    </div>
+	    <div class="form-group" id="send_to">
+	        <div>
+	            <input class="form-control string" v-model="subject" placeholder="Subject" type="text" />
+	            <span class="help-block"></span>
+	        </div>
+	    </div>
+	    <div class="form-group" id="subject">
+	        <div>
+	           <textarea v-model="message" class="message_box" placeholder="Message"></textarea>
+	            <span class="help-block"></span>
+	        </div>
+	    </div>
+	    <input class="btn btn-primary black" id="post_input" type="submit" value="Submit" v-on:click="add_message" />
+	    <a class="btn black" href="{{=URL('messages')}}">Cancel</a>
+	</div>
+</div>
+
+<script src="{{=URL('static', 'js/messages.js')}}"></script>

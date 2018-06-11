@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-
+import datetime
 def get_auth_user_id():
     return auth.user.id if auth.user else None
 
+def get_user_email():
+    return auth.user.email if auth.user is not None else None
 db.define_table('groups',
     Field('group_name'),
 )
@@ -27,3 +29,24 @@ db.define_table('enrollments',
     Field('is_course_public', type='boolean', default=True),
     Field('is_grade_public', type='boolean', default=True),
 )
+
+db.define_table('messages',
+                Field('receiver'),
+                Field('user_email', default=get_user_email()),
+                Field('user_name'),
+                Field('subject'),
+                Field('body'),
+                Field('sender_id',db.auth_user),
+                Field('sender_deleted','boolean'),
+                Field('receiver_deleted','boolean'),
+                Field('updated_on', 'datetime', update=datetime.datetime.utcnow()),
+                Field('is_viewing', 'boolean', default=False),
+                Field('has_read', 'boolean'),
+                Field('is_replying', 'boolean', default=False)
+                )
+
+db.define_table('users',
+                Field('user_email'),
+                Field('user_name'),
+                Field('user_id')
+                )

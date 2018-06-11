@@ -5,6 +5,7 @@ response.menu = [
     (T('Home'), False, URL('default', 'index'), []),
     (T('Profile'), False, URL('default', 'profile'), []),
     (T('Account'), False, URL('default', 'account'), []),
+    (T('Messages'), False, URL('default', 'messages'), []),
 ]
 
 # ----- if in production -----

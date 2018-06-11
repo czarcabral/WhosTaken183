@@ -4,6 +4,16 @@ def index():
     if not auth.user : redirect(URL('user'))
     return dict()
 
+def messages():
+    if not auth.user : redirect(URL('user'))
+    messages = None
+    if auth.user is not None:
+        messages = db(db.messages.user_email == auth.user.email).select()
+    return dict(messages=messages)
+
+def add_message():
+    return dict()
+
 def profile():
     if not auth.user : redirect(URL('user'))
     if (not request.args) : redirect(URL('profile', args=[get_auth_user_id()]))
