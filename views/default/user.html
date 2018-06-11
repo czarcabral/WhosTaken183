@@ -4,7 +4,10 @@
 {{end head}}
 
 {{block header}}
-<h2>
+{{end header}}
+
+{{block main}}
+<h1>
   {{if(request.args(0) == 'register') :
       =T('Sign Up')
       pass
@@ -15,10 +18,7 @@
       =T(request.args(0).replace('_',' ').title())
       pass
   }}
-</h2>
-{{end header}}
-
-{{block main}}
+</h1>
 <div class="container">
   <div class="row">
     <div id="web2py_user_form" class="col-lg-6">

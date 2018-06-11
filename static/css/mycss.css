@@ -1,0 +1,38 @@
+/* line 1, ../sass/_main.scss */
+main {
+  width: 50%;
+  margin: auto;
+  padding: 30px 0;
+}
+
+/* line 6, ../sass/_main.scss */
+header {
+  padding: 10px;
+  background-color: #f2f2f2;
+}
+
+/* line 10, ../sass/_main.scss */
+footer {
+  padding: 20px;
+  background-color: #f2f2f2;
+}
+
+/* line 14, ../sass/_main.scss */
+h1 {
+  text-align: center;
+  margin: 0.5em 0 0.25em 0;
+}
+
+/* line 18, ../sass/_main.scss */
+.main_header {
+  padding: 0 0 40px 0;
+}
+
+/* line 21, ../sass/_main.scss */
+table.enrollments {
+  width: 100%;
+}
+/* line 23, ../sass/_main.scss */
+table.enrollments tr {
+  padding: 10px;
+}
