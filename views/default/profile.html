@@ -86,14 +86,16 @@
                 <td>${enrollment.course_name}</td>
                 <td>${enrollment.grade}</td>
                 <td>
-                  <span><input type="checkbox" v-on:click="click_grade_public(enrollment.id)" v-model="enrollment.is_grade_public"></span>
-                  <span v-if="enrollment.is_grade_public">public</span>
-                  <span v-else>private</span>
+                  <input type="checkbox" v-bind:id="'grade_public_input_'+enrollment.id" v-on:click="click_grade_public(enrollment.id)" 
+                      v-model="enrollment.is_grade_public">
+                  <label v-if="enrollment.is_grade_public" v-bind:for="'grade_public_input_'+enrollment.id">public</label>
+                  <label v-else v-bind:for="'grade_public_input_'+enrollment.id">private</label>
                 </td>
                 <td>
-                  <span><input type="checkbox" v-on:click="click_course_public(enrollment.id)" v-model="enrollment.is_course_public"></span>
-                  <span v-if="enrollment.is_course_public">public</span>
-                  <span v-else>private</span>  
+                  <input type="checkbox" v-bind:id="'course_public_input_'+enrollment.id" v-on:click="click_course_public(enrollment.id)" 
+                      v-model="enrollment.is_course_public">
+                  <label v-if="enrollment.is_course_public" v-bind:for="'course_public_input_'+enrollment.id">public</label>
+                  <label v-else v-bind:for="'course_public_input_'+enrollment.id">private</label>
                 </td>
               </tr>
             </tbody>

@@ -40,19 +40,27 @@
       <ul>
         <li v-for="enrollment in auth_user_current_enrollments()">
           <span v-on:click="click_course(enrollment.id)"><b>${enrollment.course_name} - ${enrollment.course_description}</b></span>
-          <div v-if="clicked_courses.find(is_elem(enrollment.id))">        
-            <span>Currently Enrolled:</span>
-            <ul>
-              <li v-for="user in users_currently_enrolled(enrollment.course_name)" v-on:click="click_user(user.id)">
-                  <span>${user.name}</span> - <span>${user.quarter}</span> - <span>${user.grade}</span>
-              </li>
-            </ul>
-            <span>Past Enrolled:</span>
-            <ul>
-              <li v-for="user in users_past_enrolled(enrollment.course_name)" v-on:click="click_user(user.id)">
-                <span>${user.name}</span> - <span>${user.quarter}</span> - <span>${user.grade}</span>
-              </li>
-            </ul>
+          <div v-if="clicked_courses.find(is_elem(enrollment.id))">
+            <table>
+              <caption>Currently Enrolled</caption>
+              <tbody>
+                <tr v-for="user in users_currently_enrolled(enrollment.course_name)">
+                  <td><a href="#" v-on:click="click_user(user.id); return false;">${user.name}</a></td>
+                  <td>${user.quarter}</td>
+                  <td>${user.grade}</td>
+                  <td><a href="#">Send Message</a></td>
+                </tr>
+              </tbody>
+              <caption>Past Enrolled</caption>
+              <tbody>
+                <tr v-for="user in users_past_enrolled(enrollment.course_name)">
+                  <td><a href="#" v-on:click="click_user(user.id); return false;">${user.name}</a></td>
+                  <td>${user.quarter}</td>
+                  <td>${user.grade}</td>
+                  <td><a href="#">Send Message</a></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </li>
       </ul>
