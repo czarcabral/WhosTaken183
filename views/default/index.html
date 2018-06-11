@@ -17,7 +17,36 @@
 {{block main}}
 <div id="vue-div" style="display:none">
   <div v-if="is_loaded">
-    
+    <div class="form-group" id="send_to">
+          <div>
+              <input class="form-control string" v-model="search_term" placeholder="Search" type="text" />
+              <!-- <span class="help-block"></span> -->
+          </div>
+          <!-- <input class="btn btn-primary black" id="post_input" type="submit" value="Search" v-on:click="add_message" /> -->
+      </div>
+      <br>
+    <input class="btn btn-primary black" id="post_input" type="submit" value="Search" v-on:click="search"/>
+    <h5 v-if="!search_exists && search_toggle">Your search does not exist.</h5>
+    <table v-if="search_toggle && search_exists">
+              <caption>Currently Enrolled</caption>
+              <tbody>
+                <tr v-for="user in users_currently_enrolled(search_temp)">
+                  <td><a href="#" v-on:click="click_user(user.id); return false;">${user.name}</a></td>
+                  <td>${user.quarter}</td>
+                  <td>${user.grade}</td>
+                  <td><a href="add_message.html">Send Message</a></td>
+                </tr>
+              </tbody>
+              <caption>Past Enrolled</caption>
+              <tbody>
+                <tr v-for="user in users_past_enrolled(search_temp)">
+                  <td><a href="#" v-on:click="click_user(user.id); return false;">${user.name}</a></td>
+                  <td>${user.quarter}</td>
+                  <td>${user.grade}</td>
+                  <td><a href="add_message.html">Send Message</a></td>
+                </tr>
+              </tbody>
+            </table>
     <div v-if="is_transcript_loaded()">
       <h3>Current Courses:</h3>
       <ul>
@@ -52,6 +81,9 @@
       <h3>Transcript not found</h3>
       <p><span>Please upload your transcript </span><span><a href="{{=URL('default', 'profile')}}">here</a></span></p>
     </div>
+    <br>
+    <br>
+    <br>
   </div>
 </div>
 {{end main}}

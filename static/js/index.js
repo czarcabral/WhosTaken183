@@ -44,9 +44,14 @@ var app = function() {
         };
         return users;
     };
+
     self.users_currently_enrolled = function(course_name) {
         // query specific course's enrollments
+        // console.log(course_name);
+        // self.vue.search_toggle = false;
+
         var enrollments = self.vue.enrollments.filter(is_course_name(course_name));
+        // console.log(enrollments);
         // query all but auth_user's enrollments
         enrollments = enrollments.filter(is_not_user_id(self.vue.auth_user.id));
         // query this quarter's enrollments
@@ -85,6 +90,23 @@ var app = function() {
         window.location.href = profile_url+'/'+id;
     };
 
+    self.search = function()
+    {
+        if(!self.vue.search_toggle)
+        {
+            self.vue.search_toggle = !self.vue.search_toggle;
+        }
+        // self.vue.search_toggle = !self.vue.search_toggle;
+        self.vue.search_temp = self.vue.search_term;
+        var enrollments = self.vue.enrollments.filter(is_course_name(self.vue.search_temp));
+        if(enrollments.length==0)
+        {
+            self.vue.search_exists = false;
+        } else
+        {
+            self.vue.search_exists = true;
+        }
+    };
 
     self.vue = new Vue({
         el: "#vue-div",
@@ -98,6 +120,10 @@ var app = function() {
             courses: [{}],
             clicked_courses: [],
             current_quarter: '2018 Spring Quarter',
+            search_term: null,
+            search_toggle: false,
+            search_temp: null,
+            search_exists: false
         },
         methods: {
             is_elem: is_elem,
@@ -106,7 +132,7 @@ var app = function() {
             users_past_enrolled: self.users_past_enrolled,
 
             is_transcript_loaded: self.is_transcript_loaded,
-
+            search: self.search,
             click_course: self.click_course,
             click_user: self.click_user,
         },
