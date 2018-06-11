@@ -10,6 +10,8 @@
   var add_multiple_courses_url = "{{=URL('api', 'add_multiple_courses')}}";
   var update_multiple_enrollments_url = "{{=URL('api', 'update_multiple_enrollments')}}";
   var update_profile_url = "{{=URL('api', 'update_profile')}}";
+  var update_enrollment_grade_public_url = "{{=URL('api', 'update_enrollment_grade_public')}}";
+  var update_enrollment_course_public_url = "{{=URL('api', 'update_enrollment_course_public')}}";
 </script>
 {{end head}}
 
@@ -83,8 +85,16 @@
                 <td>${enrollment.quarter}</td>
                 <td>${enrollment.course_name}</td>
                 <td>${enrollment.grade}</td>
-                <td>${enrollment.is_grade_public}</td>
-                <td>${enrollment.is_course_public}</td>
+                <td>
+                  <span><input type="checkbox" v-on:click="click_grade_public(enrollment.id)" v-model="enrollment.is_grade_public"></span>
+                  <span v-if="enrollment.is_grade_public">public</span>
+                  <span v-else>private</span>
+                </td>
+                <td>
+                  <span><input type="checkbox" v-on:click="click_course_public(enrollment.id)" v-model="enrollment.is_course_public"></span>
+                  <span v-if="enrollment.is_course_public">public</span>
+                  <span v-else>private</span>  
+                </td>
               </tr>
             </tbody>
           </table>

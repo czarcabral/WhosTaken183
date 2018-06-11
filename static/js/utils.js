@@ -53,6 +53,16 @@ var update_profile = function(update_profile_url, user) {
         alert('ERROR - post request (update_profile_url) failed');
     });
 }
+var update_enrollment_grade_public = function(update_enrollment_grade_public, id) {
+    return $.post(update_enrollment_grade_public, {id:id}).fail(function() {
+        alert('ERROR - post request (update_enrollment_grade_public) failed');
+    });
+};
+var update_enrollment_course_public = function(update_enrollment_course_public, id) {
+    return $.post(update_enrollment_course_public, {id:id}).fail(function() {
+        alert('ERROR - post request (update_enrollment_course_public) failed');
+    });
+};
 var delete_account = function(delete_account_url) {
     return $.getJSON(delete_account_url).fail(function() {
         alert('ERROR - getJSON request (delete_account_url) failed');
