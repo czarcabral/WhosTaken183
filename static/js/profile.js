@@ -239,6 +239,20 @@ var app = function() {
             self.toggle_update_profile();
         });
     };
+    self.click_grade_public = function(id) {
+        $.when(update_enrollment_grade_public(update_enrollment_grade_public_url, id)).fail(function() {
+            let enrollments_i = self.vue.enrollments.findIndex(is_id(id));
+            let enrollment = self.vue.enrollments[enrollments_i];
+            self.vue.enrollments[enrollments_i].is_grade_public = !enrollment.is_grade_public;
+        });
+    };
+    self.click_course_public = function(id) {
+        $.when(update_enrollment_course_public(update_enrollment_course_public_url, id)).fail(function() {
+            let enrollments_i = self.vue.enrollments.findIndex(is_id(id));
+            let enrollment = self.vue.enrollments[enrollments_i];
+            self.vue.enrollments[enrollments_i].is_course_public = !enrollment.is_course_public;
+        });
+    };
 
     
     self.vue = new Vue({
@@ -266,6 +280,8 @@ var app = function() {
             upload_transcript: self.upload_transcript,
             click_update_profile: self.click_update_profile,
             update_transcript: self.update_transcript,
+            click_grade_public: self.click_grade_public,
+            click_course_public: self.click_course_public,
         },
         computed: {
         },

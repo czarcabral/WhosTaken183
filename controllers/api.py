@@ -110,6 +110,18 @@ def update_profile():
     )
     return get_auth_user()
 
+def update_enrollment_grade_public():
+    myid = request.vars.id
+    enrollment = db(db.enrollments.id==myid).select().first()
+    enrollment.update_record(is_grade_public=not enrollment.is_grade_public)
+    return response.json(dict())
+
+def update_enrollment_course_public():
+    myid = request.vars.id
+    enrollment = db(db.enrollments.id==myid).select().first()
+    enrollment.update_record(is_course_public=not enrollment.is_course_public)
+    return response.json(dict())
+
 def delete_account():
     db(db.auth_user.id == get_auth_user_id()).delete()
     db(db.enrollments.user_id == get_auth_user_id()).delete()
