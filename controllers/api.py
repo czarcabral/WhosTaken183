@@ -71,7 +71,7 @@ def add_course(course):
     db.courses.update_or_insert(
         db.courses.name == name,
         name=name,
-        description=description,
+        description=description
     )
     return response.json(dict())
 

@@ -2,6 +2,7 @@
 
 {{block head}}
 
+<link href="{{=URL('static','css/message.css')}}" rel="stylesheet" type="text/css"/>
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
   // Define your URLs here.
@@ -23,6 +24,15 @@ function show_hide_row(row)
   <div id="vue-div" class="display:none">
   <!-- Here goes your main HTML code. -->
     {{if auth.user is not None:}}
+     <div class="buttons">
+          <a class="btn black rounded">Inbox</a>
+          <a class="btn black rounded">Outbox</a>
+          <!-- <div v-if="post.is_public"> -->
+            <a class="btn black rounded">Read</a>
+          <!-- </div> -->
+          <!-- <div v-if="!post.is_public"> -->
+        </div>
+
 
     <h1>Inbox</h1>
 

@@ -48,5 +48,6 @@ db.define_table('messages',
 db.define_table('users',
                 Field('user_email'),
                 Field('user_name'),
-                Field('user_id')
+                Field('user_id'),
+                Field('classes', 'list:string')
                 )
