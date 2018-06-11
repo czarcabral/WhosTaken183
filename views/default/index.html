@@ -11,13 +11,12 @@
 {{end head}}
 
 {{block header}}
-<h1 class="center">Welcome to INDEX</h1>
 {{end header}}
 
 {{block main}}
-<div id="vue-div" style="display:none">
+<div id="vue-div" class="container padded" style="display:none">
   <div v-if="is_loaded">
-    <div>
+    <!-- <div>
       <h6>Done</h6>
       <p>As a user, I want to be able to upload my transcript so that I don't have to manually enter info when someone asks for my weekly schedule/academic standing.</p>
       <p>As a user, I want to be able to make an account, so that I can save my info.</p>
@@ -34,14 +33,17 @@
       <p>Make Logo by changing font and making bolder - color: teal</p>
       <p>use vuesax for everything</p>
       <p>search bar using vuesax</p>
+    </div> -->
+    <div class="main_header">
+      <h1>Welcome to EZOrg</h1>
+      <p class="center">Click on your classes below to quickly and easily find your peers.</p>
     </div>
     <div v-if="is_transcript_loaded()">
-      <h3>Current Courses:</h3>
-      <ul>
+      <ul class="center">
         <li v-for="enrollment in auth_user_current_enrollments()">
           <span v-on:click="click_course(enrollment.id)"><b>${enrollment.course_name} - ${enrollment.course_description}</b></span>
           <div v-if="clicked_courses.find(is_elem(enrollment.id))">
-            <table>
+            <table class="enrollments">
               <caption>Currently Enrolled</caption>
               <tbody>
                 <tr v-for="user in users_currently_enrolled(enrollment.course_name)">
@@ -51,6 +53,8 @@
                   <td><a href="#">Send Message</a></td>
                 </tr>
               </tbody>
+            </table>
+            <table class="enrollments">
               <caption>Past Enrolled</caption>
               <tbody>
                 <tr v-for="user in users_past_enrolled(enrollment.course_name)">
