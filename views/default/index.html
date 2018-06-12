@@ -76,7 +76,17 @@
           <div v-if="clicked_courses.find(is_elem(enrollment.id))">
             <a href="javascript:;" v-on:click="click_info(enrollment.id)">Course Info</a>
             <div v-if="clicked_info.find(is_elem(enrollment.id))">
-              <p>test</p>
+              <p>Placeholder for course description. A big paragraph with a bunch of words goes here.</p>
+              <p>Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah </p>
+              <table class="enrollments">
+                <tbody>
+                  <tr>
+                    <td>Professor</td>
+                    <td>Time</td>
+                    <td>Room</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             <table class="enrollments">
               <caption>Currently Enrolled</caption>

@@ -94,22 +94,7 @@ var app = function() {
         console.log(id);
         let clicked_info_i = self.vue.clicked_info.findIndex(is_elem(id));
         if(clicked_info_i == -1) {
-            if(self.vue.info.findIndex(x => x.id === id)) {
-                var split = split_course_name(id - 1);
-                return $.post(get_info_url,
-                {
-                    term: get_term(self.vue.current_quarter),
-                    subject: split[0],
-                    num: split[1],
-                }
-                ).done(function(data) {
-                    self.vue.clicked_info.push(id);
-                    self.vue.info.push(data);
-                }
-                ).fail(function(data) {
-                    alert('ERROR - post request (get_info_url) failed');
-                });
-            }
+            self.vue.clicked_info.push(id);
         } else {
             self.vue.clicked_info.splice(clicked_info_i, 1);
         }
