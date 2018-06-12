@@ -1,5 +1,6 @@
 from gluon.utils import web2py_uuid
 import json
+from scraper import scrape
 
 def get_auth_user():
     auth_user = db(db.auth_user.id==get_auth_user_id()).select(
@@ -95,6 +96,7 @@ def update_multiple_enrollments():
     return response.json(dict())
 
 def update_profile():
+    print 'update_profile'
     auth.user.first_name = request.vars.first_name
     auth.user.last_name = request.vars.last_name
     auth.user.email_name = request.vars.email_name
@@ -279,3 +281,14 @@ def reply_message():
     # print("message added")
     # redirect(URL('default','index'))
     return response.json(dict(messages=t))
+
+def get_info():
+    print('api scrape')
+    item = scrape(request.vars.term, request.vars.subject, request.vars.num)
+    print item
+    return response.json(dict(
+        desc=item['desc'],
+        times=item['times'],
+        room=item['room'],
+        prof=item['prof']
+    ))
