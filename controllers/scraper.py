@@ -1,7 +1,7 @@
 import scrapy
 from scrapy.loader import ItemLoader
 from scrapy.loader.processors import TakeFirst, MapCompose, Join
-from scrapy.crawler import CrawlerProcess
+from scrapy.crawler import Crawler, CrawlerProcess
 from scrapy.exceptions import DropItem
 from scrapy import signals, Spider, Item, Field
 
@@ -26,7 +26,7 @@ class ClassPipeline(object):
         if item['desc'] and item['times'] and item['room'] and item['prof']:
             return item
         else:
-            raise DropItem("Missing price in %s" % item)
+            raise DropItem("Missing field in %s" % item)
 
 
 class ClassSpider(scrapy.Spider):
@@ -76,11 +76,8 @@ class ClassSpider(scrapy.Spider):
 
         meeting_info = response.xpath('//div[@class = "panel-body"]')[meeting_index]
         days_and_times = meeting_info.xpath('table/tr[2]/td[1]/text()').extract_first()
-        days_and_times.encode('ascii')
         room = meeting_info.xpath('table/tr[2]/td[2]/text()').extract_first()
-        room.encode('ascii')
         prof = meeting_info.xpath('table/tr[2]/td[3]/text()').extract_first()
-        prof.encode('ascii')
 
         l = ItemLoader(item=ClassItem(), response=response)
         l.add_value('desc', desc)
@@ -89,8 +86,21 @@ class ClassSpider(scrapy.Spider):
         l.add_value('prof', prof)
         return l.load_item()
 
-    def run():
-        process = CrawlerProcess()
 
-        process.crawl(ClassSpider)
-        process.start()  # the script will block here until the crawling is finished
+
+def run(term, subj, nbr):
+
+    items = []
+
+    def collect_items(item, response, spider):
+        items.append(item)
+
+    crawler = Crawler(ClassSpider)
+    crawler.signals.connect(collect_items, signals.item_scraped)
+
+    process = CrawlerProcess()
+
+    process.crawl(crawler, term=term, subject=subj, catalog_nbr=nbr)
+    process.start()  # the script will block here until the crawling is finished
+
+    return items
