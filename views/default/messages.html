@@ -25,22 +25,24 @@ function show_hide_row(row)
   <!-- Here goes your main HTML code. -->
     {{if auth.user is not None:}}
      <div class="buttons">
-          <a class="btn black rounded">Inbox</a>
-          <a class="btn black rounded">Outbox</a>
+          <a class="btn black rounded" v-on:click="toggle_inbox">Inbox</a>
+          <a class="btn black rounded" v-on:click="toggle_outbox">Outbox</a>
           <!-- <div v-if="post.is_public"> -->
-            <a class="btn black rounded">Read</a>
+            <a class="btn black rounded" v-on:click="toggle_read">Read</a>
           <!-- </div> -->
           <!-- <div v-if="!post.is_public"> -->
         </div>
 
 
-    <h1>Inbox</h1>
+    <h1 v-if="in_inbox">Inbox</h1>
+    <h1 v-if="in_outbox">Outbox</h1>
+    <h1 v-if="in_read">Read</h1>
 
     <div class="add_btn">
       <a class="btn black rounded" href="{{=URL('add_message')}}">Create New Message</a>
     </div>
 
-    <div class="result_table">
+    <div class="result_table" v-if="in_inbox">
       <table class="message_table">
           <thead>
           <tr>
@@ -53,9 +55,9 @@ function show_hide_row(row)
           </tr>
           </thead>
           <tbody v-for="message in messages" v-if="message.receiver=='{{=auth.user.email}}'">
-            <tr v-if="!message.has_read" v-on:click="toggle_view(message.id)">
-                <td colspan="2">${message.user_email}</td>
-                <td colspan="2'">${message.user_name}</td>
+            <tr v-if="!message.has_read && !message.receiver_deleted" v-on:click="toggle_view(message.id)">
+                <td colspan="2" class="message">${message.user_email}</td>
+                <td colspan="2" class="message">${message.user_name}</td>
                 <td colspan="2" class="message">
                     ${message.subject}
                 </td>
@@ -63,14 +65,112 @@ function show_hide_row(row)
                 <td colspan="2">${message.updated_on}</td>
                 <td colspan="1"></td>
             </tr>
-            <tr v-if="message.has_read" v-on:click="toggle_view(message.id)" style="background-color: #778899;">
-                <td colspan="2">${message.user_email}</td>
-                <td colspan="2'">${message.user_name}</td>
+            <tr v-if="message.has_read && !message.receiver_deleted" v-on:click="toggle_view(message.id)" style="background-color: #778899;">
+                <td colspan="2" class="message">${message.user_email}</td>
+                <td colspan="2" class="message">${message.user_name}</td>
                 <td colspan="2" class="message">
                     ${message.subject}
                 </td>
                 <td colspan="2" class="message">${message.message}</td>
                 <td colspan="2">${message.updated_on}</td>
+                <td colspan="1"></td>
+            </tr>
+            <tr v-if="message.is_viewing">
+              <td></td>
+              <td colspan="10" class="expanded">
+                <h3>
+                  Subject: ${message.subject}
+                </h3>
+                <h4>Message: </h4>
+                <p class="expanded">
+                  ${message.message}
+                </p>
+                <textarea v-model="reply" class="message_box" placeholder="Message"  v-if="message.is_replying"></textarea>
+                <input class="btn black rounded" id="post_input" type="submit" value="Send" v-on:click="reply_message(message.id)" v-if="message.is_replying"/>
+                <a class="btn black rounded" v-on:click="reply_toggle(message.id)" v-if="!message.is_replying">Reply</a>
+                <a class="btn black rounded" v-on:click="toggle_view(message.id)">Cancel</a>
+                  <a class="btn red rounded" v-on:click="delete_message(message.id)">Delete</a>
+              </td>
+            </tr>
+          </tbody>
+      </table>
+    </div>
+
+    <div class="result_table" v-if="in_outbox">
+      <table class="message_table">
+          <thead>
+          <tr>
+              <th colspan="2">To</th>
+              <th colspan="2">User</th>
+              <th colspan="2">Subject</th>
+              <th colspan="2">Message</th>
+              <th colspan="2">Date</th>
+              <th colspan="1"></th>
+          </tr>
+          </thead>
+          <tbody v-for="message in messages" v-if="message.sender=='{{=auth.user.email}}'">
+            <tr v-if="!message.has_read && !message.sender_deleted" v-on:click="toggle_outbox_view(message.id)">
+                <td colspan="2" class="message">${message.receiver}</td>
+                <td colspan="2" class="message">${message.receiver_name}</td>
+                <td colspan="2" class="message">
+                    ${message.subject}
+                </td>
+                <td colspan="2" class="message">${message.message}</td>
+                <td colspan="2">${message.updated_on}</td>
+                <td colspan="1"></td>
+            </tr>
+            <tr v-if="message.has_read && !message.sender_deleted" v-on:click="toggle_outbox_view(message.id)">
+                <td colspan="2" class="message">${message.receiver}</td>
+                <td colspan="2" class="message">${message.receiver_name}</td>
+                <td colspan="2" class="message">
+                    ${message.subject}
+                </td>
+                <td colspan="2" class="message">${message.message}</td>
+                <td colspan="2">${message.updated_on}</td>
+                <td colspan="1"></td>
+            </tr>
+            <tr v-if="message.is_viewing">
+              <td></td>
+              <td colspan="10" class="expanded">
+                <h3>
+                  Subject: ${message.subject}
+                </h3>
+                <h4>Message: </h4>
+                <p class="expanded">
+                  ${message.message}
+                </p>
+                <textarea v-model="reply" class="message_box" placeholder="Message"  v-if="message.is_replying"></textarea>
+                <input class="btn black rounded" id="post_input" type="submit" value="Send" v-on:click="reply_message(message.id)" v-if="message.is_replying"/>
+                <a class="btn black rounded" v-on:click="reply_toggle(message.id)" v-if="!message.is_replying">Reply</a>
+                <a class="btn black rounded" v-on:click="toggle_view(message.id)">Cancel</a>
+                  <a class="btn red rounded" v-on:click="delete_message(message.id)">Delete</a>
+              </td>
+            </tr>
+          </tbody>
+      </table>
+    </div>
+
+    <div class="result_table" v-if="in_read">
+      <table class="message_table">
+          <thead>
+          <tr>
+              <th colspan="2">From</th>
+              <th colspan="2">User</th>
+              <th colspan="2">Subject</th>
+              <th colspan="2">Message</th>
+              <th colspan="2">Date</th>
+              <th colspan="1"></th>
+          </tr>
+          </thead>
+          <tbody v-for="message in messages" v-if="message.receiver=='{{=auth.user.email}}'">
+            <tr v-if="message.has_read && !message.receiver_deleted" v-on:click="toggle_view(message.id)" style="background-color: #778899;">
+                <td colspan="2"  class="message">${message.user_email}</td>
+                <td colspan="2"  class="message">${message.user_name}</td>
+                <td colspan="2" class="message">
+                    ${message.subject}
+                </td>
+                <td colspan="2" class="message">${message.message}</td>
+                <td colspan="2" >${message.updated_on}</td>
                 <td colspan="1"></td>
             </tr>
             <tr v-if="message.is_viewing">

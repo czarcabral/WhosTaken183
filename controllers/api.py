@@ -130,6 +130,7 @@ def delete_account():
 
 def get_messages():
     # print("HI")
+    # db.messages.truncate()
     start_idx=int(request.vars.start_idx) if request.vars.start_idx is not None else 0
     end_idx=int(request.vars.end_idx) if request.vars.end_idx is not None else 0
     messages = []
@@ -148,13 +149,15 @@ def get_messages():
                 user_email=r.user_email,
                 subject=r.subject,
                 receiver=r.receiver,
+                sender=r.sender,
                 updated_on=r.updated_on,
                 sender_deleted=r.sender_deleted,
                 receiver_deleted=r.receiver_deleted,
                 message=r.body,
                 is_viewing=r.is_viewing,
                 has_read=r.has_read,
-                is_replying=r.is_replying
+                is_replying=r.is_replying,
+                receiver_name=r.receiver_name
             )
             messages.append(t)
         else: 
@@ -234,12 +237,17 @@ def add_message():
     # db.messages.truncate()
     # print(request.vars.sender)
     # print(request.vars.subject)
+    print(request.vars.receiver_name)
     t_id = db.messages.insert(
         receiver=request.vars.receiver,
+        sender=auth.user.email,
         subject=request.vars.subject,
         body=request.vars.message,
         user_name=request.vars.auth_name,
-        has_read=False
+        has_read=False,
+        sender_deleted=False,
+        receiver_deleted=False,
+        receiver_name=request.vars.receiver_name
     )
     t = db.messages(t_id)
     # print("message added")
@@ -257,9 +265,25 @@ def toggle_read():
 
 @auth.requires_signature()
 def delete_message():
+    sender = False
+    receiver = False
+    if request.vars.sender_deleted == "true":
+        sender = True
+    if request.vars.receiver_deleted == "true":
+        receiver = True
     if request.vars.message_id is not None:
         q = ((db.messages.id == request.vars.message_id))
-        db(q).delete()
+        if sender and receiver:
+                db(q).delete()
+                print("message actually deleted")
+        elif sender:
+            row = db(q).select().first()
+            row.update_record(sender_deleted=True)
+            print("sender deleted")
+        elif receiver:
+            row = db(q).select().first()
+            row.update_record(receiver_deleted=True)
+            print("receiver_deleted")
     # db(db.post.id == request.vars.post_id).delete()
     return "ok"
 
@@ -271,10 +295,12 @@ def reply_message():
     print(request.vars.message)
     t_id = db.messages.insert(
         receiver=request.vars.receiver,
+        sender=auth.user.email,
         subject=request.vars.subject,
         body=request.vars.message,
         user_name=request.vars.auth_name,
-        has_read=False
+        has_read=False,
+        receiver_name=request.vars.receiver_name
     )
     t = db.messages(t_id)
     # print("message added")

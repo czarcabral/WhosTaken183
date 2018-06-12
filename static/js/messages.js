@@ -38,7 +38,12 @@ var app = function() {
         });
         // console.log(self.vue.auth_email);
         self.vue.message_index=0;
-
+        // self.vue.
+  //   setTimeout(function() {
+  // //your code to be executed after 1 second
+  //       console.log(self.vue.messages);
+  //       console.log("got users");
+  //       }, 1000);
     };
 
     function get_users_url(start_idx, end_idx)
@@ -61,8 +66,11 @@ var app = function() {
             self.vue.auth_name=data.auth_name;
             console.log(self.vue.current_user);
         })
-        console.log(self.vue.users_all.length);
-        console.log("got users");
+  //       setTimeout(function() {
+  // //your code to be executed after 1 second
+  //       console.log(self.vue.users_all);
+  //       console.log("got users");
+  //       }, 1000);
     };
 
     self.add_message = function()
@@ -78,6 +86,7 @@ var app = function() {
                     break;
                 }
             }
+        // console.log(self.vue.users_all[idx].user_name)
         if(idx==-1)
         {
             // console.log("HI");
@@ -89,7 +98,8 @@ var app = function() {
                 receiver: self.vue.receiver,
                 subject: self.vue.subject,
                 message: self.vue.message,
-                auth_name: self.vue.auth_name
+                auth_name: self.vue.auth_name,
+                receiver_name: self.vue.users_all[idx].user_name
             },
             function (data) {
                 // console.log("The user saved value " + self.vue.my_string);
@@ -133,24 +143,59 @@ var app = function() {
         }
     };
 
+    self.toggle_outbox_view = function(message_id)
+    {
+
+        console.log("toggled");
+        console.log(self.vue.messages.length);
+        var idx = null;
+            for (var i = 0; i < self.vue.messages.length; i++) {
+                if (self.vue.messages[i].id === message_id) {
+                    idx = i;
+                    break;
+                }
+            }
+        // console.log(self.vue.messages[idx].is_viewing);
+        self.vue.messages[idx].is_viewing = !self.vue.messages[idx].is_viewing;
+        // console.log(self.vue.messages[idx].is_viewing);
+        // console.log(self.vue.messages[0].has_read);
+    };
+
     self.delete_message = function (message_id) {
-        $.post(del_message_url,
-            {
-                message_id: message_id
-            },
-            function () {
                 var idx = null;
                 for (var i = 0; i < self.vue.messages.length; i++) {
                     if (self.vue.messages[i].id === message_id) {
                         // If I set this to i, it won't work, as the if below will
                         // return false for items in first position.
-                        idx = i + 1;
+                        idx = i;
                         break;
                     }
                 }
-                if (idx) {
-                    self.vue.messages.splice(idx - 1, 1);
+                var sender_deleted=self.vue.messages[idx].sender_deleted;
+                var receiver_deleted=self.vue.messages[idx].receiver_deleted;
+                if(self.vue.messages[idx].receiver===self.vue.auth_email &&
+                    self.vue.messages[idx].sender===self.vue.auth_email)
+                {
+                    self.vue.messages[idx].receiver_deleted=true;
+                    receiver_deleted=true;
+                    self.vue.messages[idx].sender_deleted=true;
+                    sender_deleted=true;
                 }
+                else if(self.vue.messages[idx].receiver===self.vue.auth_email)
+                {
+                    self.vue.messages[idx].receiver_deleted=true;
+                    receiver_deleted=true;
+                } else 
+                {
+                    self.vue.messages[idx].sender_deleted=true;
+                    sender_deleted=true;
+                }
+            self.vue.messages[idx].is_viewing = !self.vue.messages[idx].is_viewing;
+        $.post(del_message_url,
+            {
+                message_id: message_id,
+                sender_deleted: sender_deleted, 
+                receiver_deleted: receiver_deleted
             }
         )
     };
@@ -185,12 +230,22 @@ var app = function() {
                     break;
                 }
             }
+            var idx2 = -1;
+            for (var i = 0; i < self.vue.users_all.length; i++) {
+                // console.log(self.vue.user[i].user_email);
+                // console.log(self.vue.users_all.length);
+                if (self.vue.users_all[i].user_email === self.vue.messages[idx].user_email) {
+                    idx2 = i;
+                    break;
+                }
+            }
         $.post(reply_message_url,
             {
                 receiver: self.vue.messages[idx].user_email,
                 subject: "Re: " + self.vue.messages[idx].subject,
                 message: self.vue.reply,
-                auth_name: self.vue.auth_name
+                auth_name: self.vue.auth_name,
+                receiver_name: self.vue.users_all[idx2].user_name
             },
             function (data) {
                 // console.log("The user saved value " + self.vue.my_string);
@@ -199,6 +254,27 @@ var app = function() {
             });
         self.vue.messages[idx].is_replying = !self.vue.messages[idx].is_replying;
         self.vue.messages[idx].is_viewing = !self.vue.messages[idx].is_viewing;
+    }
+
+    self.toggle_inbox = function()
+    {
+        self.vue.in_inbox=true;
+        self.vue.in_outbox=false;
+        self.vue.in_read=false;
+    }
+
+    self.toggle_outbox = function()
+    {
+        self.vue.in_inbox=false;
+        self.vue.in_outbox=true;
+        self.vue.in_read=false;
+    }
+
+    self.toggle_read = function()
+    {
+        self.vue.in_inbox=false;
+        self.vue.in_outbox=false;
+        self.vue.in_read=true;
     }
 
     // Complete as needed.
@@ -219,7 +295,10 @@ var app = function() {
             message: null,
             auth_email: null,
             message_index: 0,
-            reply: null
+            reply: null,
+            in_inbox: true,
+            in_outbox: false,
+            in_read: false
         },
         methods: {
             get_messages: self.get_messages,
@@ -228,7 +307,11 @@ var app = function() {
             delete_message: self.delete_message,
             user_check: self.user_check,
             reply_toggle: self.reply_toggle,
-            reply_message: self.reply_message
+            reply_message: self.reply_message,
+            toggle_inbox: self.toggle_inbox,
+            toggle_outbox: self.toggle_outbox,
+            toggle_read: self.toggle_read,
+            toggle_outbox_view: self.toggle_outbox_view
         }
 
     });
