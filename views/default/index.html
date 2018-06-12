@@ -16,69 +16,6 @@
 {{block main}}
 <div id="vue-div" class="container padded" style="display:none">
   <div v-if="is_loaded">
-    <div class="form-group" id="send_to">
-          <div>
-              <input class="form-control string" v-model="search_term" placeholder="Search" type="text" />
-              <!-- <span class="help-block"></span> -->
-          </div>
-          <!-- <input class="btn btn-primary black" id="post_input" type="submit" value="Search" v-on:click="add_message" /> -->
-      </div>
-      <br>
-    <input class="btn btn-primary black" id="post_input" type="submit" value="Search" v-on:click="search"/>
-    <h5 v-if="!search_exists && search_toggle">Your search does not exist.</h5>
-    <!-- <h5 v-if="search_toggle && search_exists">hi${user_search_id}</h5> -->
-    <table v-if="search_toggle && search_exists && user_search">
-              <caption>Users Found</caption>
-              <tbody>
-                <tr>
-                  <td style="font-weight: bold">Name</td>
-                  <td style="font-weight: bold">Email</td>
-                  <td style="font-weight: bold">Message</td>
-                </tr>
-                <tr v-for="user in searched_users">
-                  <td><a href="#" v-on:click="click_user(user.id); return false;">${user.first_name + " " + user.last_name}</a></td>
-                  <td>${user.email}</td>
-                  <td><a href="add_message.html">Send Message</a></td>
-                </tr>
-              </tbody>
-            </table>
-    <table v-if="search_toggle && search_exists && class_search">
-              <caption>Currently Enrolled</caption>
-              <tbody>
-                <tr>
-                  <td style="font-weight: bold">Name</td>
-                  <td style="font-weight: bold">Quarter</td>
-                  <td style="font-weight: bold">Grade</td>
-                  <td style="font-weight: bold">Email</td>
-                  <td style="font-weight: bold">Message</td>
-                </tr>
-                <tr v-for="user in users_currently_enrolled(search_temp)">
-
-                  <td><a href="#" v-on:click="click_user(user.id); return false;">${user.name}</a></td>
-                  <td>${user.quarter}</td>
-                  <td>${user.grade}</td>
-                  <td>${user.email}</td>
-                  <td><a href="add_message.html">Send Message</a></td>
-                </tr>
-              </tbody>
-              <caption>Past Enrolled</caption>
-              <tbody>
-                <tr>
-                  <td style="font-weight: bold">Name</td>
-                  <td style="font-weight: bold">Quarter</td>
-                  <td style="font-weight: bold">Grade</td>
-                  <td style="font-weight: bold">Email</td>
-                  <td style="font-weight: bold">Message</td>
-                </tr>
-                <tr v-for="user in users_past_enrolled(search_temp)">
-                  <td><a href="#" v-on:click="click_user(user.id); return false;">${user.name}</a></td>
-                  <td>${user.quarter}</td>
-                  <td>${user.grade}</td>
-                  <td>${user.email}</td>
-                  <td><a href="add_message.html">Send Message</a></td>
-                </tr>
-              </tbody>
-            </table>
     <!-- <div>
       <h6>Done</h6>
       <p>As a user, I want to be able to upload my transcript so that I don't have to manually enter info when someone asks for my weekly schedule/academic standing.</p>
@@ -101,13 +38,86 @@
       <h1>Welcome to EZOrg</h1>
       <p class="center">Click on your classes below to quickly and easily find your peers.</p>
     </div>
+    <div class="form-group" id="send_to">
+      <div>
+        <input class="form-control string" v-model="search_term" placeholder="Search" type="text" />
+        <!-- <span class="help-block"></span> -->
+      </div>
+      <!-- <input class="btn btn-primary black" id="post_input" type="submit" value="Search" v-on:click="add_message" /> -->
+    </div>
+    <br>
+    <input class="btn btn-primary black" id="post_input" type="submit" value="Search" v-on:click="search"/>
+    <div v-if="!search_exists && search_toggle">
+      <h5>Your search does not exist.</h5>
+      <!-- <h5 v-if="search_toggle && search_exists">hi${user_search_id}</h5> -->      
+    </div>
+    <div v-if="search_toggle && search_exists && user_search" class="enrollments">
+      <table class="enrollments">
+        <caption style="padding:0 0 15px 0">Users Found</caption>
+        <tbody>
+          <tr>
+            <td style="font-weight: bold">Name</td>
+            <td style="font-weight: bold">Email</td>
+            <td style="font-weight: bold">Message</td>
+          </tr>
+          <tr v-for="user in searched_users">
+            <td><a href="#" v-on:click="click_user(user.id); return false;">${user.first_name + " " + user.last_name}</a></td>
+            <td>${user.email}</td>
+            <td><a href="add_message.html">Send Message</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div v-if="search_toggle && search_exists && class_search">
+      <table class="enrollments">
+        <caption style="padding:0 0 15px 0">Currently Enrolled</caption>
+        <tbody>
+          <tr>
+            <td style="font-weight: bold">Name</td>
+            <td style="font-weight: bold">Quarter</td>
+            <td style="font-weight: bold">Grade</td>
+            <td style="font-weight: bold">Email</td>
+            <td style="font-weight: bold">Message</td>
+          </tr>
+          <tr v-for="user in users_currently_enrolled(search_temp)">
+            <td><a href="#" v-on:click="click_user(user.id); return false;">${user.name}</a></td>
+            <td>${user.quarter}</td>
+            <td>${user.grade}</td>
+            <td>${user.email}</td>
+            <td><a href="add_message.html">Send Message</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <br><br>
+      <table class="enrollments">
+        <caption style="padding:0 0 15px 0">Past Enrolled</caption>
+        <tbody>
+          <tr>
+            <td style="font-weight: bold">Name</td>
+            <td style="font-weight: bold">Quarter</td>
+            <td style="font-weight: bold">Grade</td>
+            <td style="font-weight: bold">Email</td>
+            <td style="font-weight: bold">Message</td>
+          </tr>
+          <tr v-for="user in users_past_enrolled(search_temp)">
+            <td><a href="#" v-on:click="click_user(user.id); return false;">${user.name}</a></td>
+            <td>${user.quarter}</td>
+            <td>${user.grade}</td>
+            <td>${user.email}</td>
+            <td><a href="add_message.html">Send Message</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br><br>
     <div v-if="is_transcript_loaded()">
       <ul class="center">
         <li v-for="enrollment in auth_user_current_enrollments()">
-          <span v-on:click="click_course(enrollment.id)"><b>${enrollment.course_name} - ${enrollment.course_description}</b></span>
+          <h6><a href="#" v-on:click.prevent="click_course(enrollment.id); return false;">${enrollment.course_name} - ${enrollment.course_description}</a></h6>
           <div v-if="clicked_courses.find(is_elem(enrollment.id))">
             <table class="enrollments">
-              <caption>Currently Enrolled</caption>
+              <br>
+              <caption style="padding:0 0 15px 0">Currently Enrolled</caption>
               <tbody>
                 <tr>
                   <td style="font-weight: bold">Name</td>
@@ -125,8 +135,9 @@
                 </tr>
               </tbody>
             </table>
+            <br><br>
             <table class="enrollments">
-              <caption>Past Enrolled</caption>
+              <caption style="padding:0 0 15px 0">Past Enrolled</caption>
               <tbody>
                 <tr>
                   <td style="font-weight: bold">Name</td>
@@ -143,6 +154,7 @@
                 </tr>
               </tbody>
             </table>
+            <br><br>
           </div>
         </li>
       </ul>
