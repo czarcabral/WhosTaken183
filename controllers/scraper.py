@@ -1,3 +1,5 @@
+from gluon.utils import web2py_uuid
+import json
 import scrapy
 from scrapy.loader import ItemLoader
 from scrapy.loader.processors import TakeFirst, MapCompose, Join
@@ -87,9 +89,13 @@ class ClassSpider(scrapy.Spider):
         return l.load_item()
 
 
-
-def run(term, subj, nbr):
-
+def scrape():
+    print request.vars.term
+    print request.vars.subject
+    print request.vars.num
+    term = request.vars.term
+    subj = request.vars.subject
+    nbr = request.vars.num
     items = []
 
     def collect_items(item, response, spider):
@@ -103,4 +109,10 @@ def run(term, subj, nbr):
     process.crawl(crawler, term=term, subject=subj, catalog_nbr=nbr)
     process.start()  # the script will block here until the crawling is finished
 
-    return items
+    cl = items[0]
+    return response.json(dict(
+        desc=cl['desc'],
+        times=cl['times'],
+        room=cl['room'],
+        prof=cl['prof']
+    ))

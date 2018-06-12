@@ -79,6 +79,7 @@ var app = function() {
 
     // UI functions
     self.click_course = function(id) {
+        console.log(id);
         let clicked_course_i = self.vue.clicked_courses.findIndex(is_elem(id));
         if(clicked_course_i == -1) {
             self.vue.clicked_courses.push(id);
@@ -89,6 +90,58 @@ var app = function() {
     self.click_user = function(id) {
         window.location.href = profile_url+'/'+id;
     };
+    self.click_info = function(id) {
+        console.log(id);
+        let clicked_info_i = self.vue.clicked_info.findIndex(is_elem(id));
+        if(clicked_info_i == -1) {
+            if(self.vue.info.findIndex(x => x.id === id)) {
+                var split = split_course_name(id - 1);
+                return $.post(get_info_url,
+                {
+                    term: get_term(self.vue.current_quarter),
+                    subject: split[0],
+                    num: split[1],
+                }
+                ).done(function(data) {
+                    self.vue.clicked_info.push(id);
+                    self.vue.info.push(data);
+                }
+                ).fail(function(data) {
+                    alert('ERROR - post request (get_info_url) failed');
+                });
+            }
+        } else {
+            self.vue.clicked_info.splice(clicked_info_i, 1);
+        }
+    };
+
+    function get_term(term_string) {
+        let year = term_string.substr(0, 1) + term_string.substr(2, 2);
+        let qtr_string = term_string.split(' ')[1];
+        let qtr = null;
+        if(qtr_string === 'Fall') {
+            qtr = '8';
+        } else if (qtr_string === 'Summer') {
+            qtr = '4';
+        } else if (qtr_string === 'Spring') {
+            qtr = '2';
+        } else if (qtr_string === 'Winter') {
+            qtr = '0';
+        } else {
+            console.log('get_term() invalid quarter')
+            return null;
+        }
+        //console.log('term string: ' + year + qtr);
+        return year + qtr;
+    }
+
+    function split_course_name(course_id) {
+        let split = self.vue.courses.find(x => x.id === course_id).name.split(' ');
+        //console.log('split: ' + split[0] + ' ' + split[1]);
+        return split;
+
+    }
+
 
     self.search = function()
     {
@@ -119,6 +172,8 @@ var app = function() {
             enrollments: [{}],
             courses: [{}],
             clicked_courses: [],
+            info: [{}],
+            clicked_info: [],
             current_quarter: '2018 Spring Quarter',
             search_term: null,
             search_toggle: false,
@@ -135,6 +190,7 @@ var app = function() {
             search: self.search,
             click_course: self.click_course,
             click_user: self.click_user,
+            click_info: self.click_info,
         },
         computed: {
         },

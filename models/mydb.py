@@ -16,9 +16,9 @@ db.define_table('memberships',
 )
 
 db.define_table('courses',
-    Field('name'), # i.e. cmps183
-    Field('description'), # i.e. web applications
-    # Field('description'),
+    Field('name'),  # i.e. cmps183
+    Field('description'),  # i.e. web applications
+    # Field('desc_long'),
 )
 
 db.define_table('enrollments',

@@ -7,6 +7,7 @@
   var get_users_url = "{{=URL('api', 'get_users')}}";
   var get_enrollments_url = "{{=URL('api', 'get_enrollments')}}";
   var get_courses_url = "{{=URL('api', 'get_courses')}}";
+  var get_info_url = "{{=URL('scraper', 'scrape')}}";
 </script>
 {{end head}}
 
@@ -73,6 +74,10 @@
         <li v-for="enrollment in auth_user_current_enrollments()">
           <span v-on:click="click_course(enrollment.id)"><b>${enrollment.course_name} - ${enrollment.course_description}</b></span>
           <div v-if="clicked_courses.find(is_elem(enrollment.id))">
+            <a href="javascript:;" v-on:click="click_info(enrollment.id)">Course Info</a>
+            <div v-if="clicked_info.find(is_elem(enrollment.id))">
+              <p>test</p>
+            </div>
             <table class="enrollments">
               <caption>Currently Enrolled</caption>
               <tbody>
