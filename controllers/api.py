@@ -63,6 +63,7 @@ def add_enrollment(enrollment):
         course_name=course_name,
         quarter=quarter,
         grade=grade,
+        email=auth.user.email
     )
 
 def add_course(course):

@@ -26,6 +26,7 @@ db.define_table('enrollments',
     Field('course_name'),
     Field('quarter'),
     Field('grade'),
+    Field('email'),
     Field('is_course_public', type='boolean', default=True),
     Field('is_grade_public', type='boolean', default=True),
 )

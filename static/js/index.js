@@ -36,7 +36,7 @@ var app = function() {
             let user_id = enrollments[i].user_id;
             let user = self.vue.users.find(is_id(user_id));
             if(user) {
-                let users_i = users.push({id:user_id, name:user.first_name+' '+user.last_name, quarter:enrollments[i].quarter}) - 1;
+                let users_i = users.push({id:user_id, name:user.first_name+' '+user.last_name, quarter:enrollments[i].quarter, email: user.email}) - 1;
                 if(enrollments[i].is_grade_public) {
                     users[users_i].grade = enrollments[i].grade;
                 };
@@ -47,9 +47,6 @@ var app = function() {
 
     self.users_currently_enrolled = function(course_name) {
         // query specific course's enrollments
-        // console.log(course_name);
-        // self.vue.search_toggle = false;
-
         var enrollments = self.vue.enrollments.filter(is_course_name(course_name));
         // console.log(enrollments);
         // query all but auth_user's enrollments
@@ -92,20 +89,79 @@ var app = function() {
 
     self.search = function()
     {
+        console.log(self.vue.users[1].first_name);
         if(!self.vue.search_toggle)
         {
             self.vue.search_toggle = !self.vue.search_toggle;
         }
         // self.vue.search_toggle = !self.vue.search_toggle;
         self.vue.search_temp = self.vue.search_term;
-        var enrollments = self.vue.enrollments.filter(is_course_name(self.vue.search_temp));
-        if(enrollments.length==0)
-        {
-            self.vue.search_exists = false;
-        } else
-        {
-            self.vue.search_exists = true;
+        var term = self.vue.search_temp;
+        var course_search = false;
+        for (var i = 0; i < term.length; i++) {
+            if(term.charAt(i)<='9' && term.charAt(i)>='0')
+            {
+                course_search=true;
+                break;
+            }
         }
+        console.log(self.vue.search_temp);
+        if(course_search==true)
+        {
+            var enrollments = self.vue.enrollments.filter(is_course_name(self.vue.search_temp));
+            self.vue.class_search = true;
+            self.vue.user_search = false;
+            // console.log(enrollments);
+            if(enrollments.length==0)
+            {
+                self.vue.search_exists = false;
+            } else
+            {
+                self.vue.search_exists = true;
+            }
+        } else 
+        {
+            self.vue.class_search=false;
+            self.vue.user_search=true;
+            self.vue.searched_users=[];
+            var user_found=false;
+            for(var i=0;i<self.vue.users.length;i++)
+            {
+                var first = self.vue.users[i].first_name;
+                var last = self.vue.users[i].last_name;
+                var name = first + " " + last;
+                if(term===name || term === first || term === last)
+                {
+                    user_found=true;
+                    self.vue.searched_users.push(self.vue.users[i]);
+                    self.vue.user_search_id = self.vue.users[i].id;
+                    // console.log(self.vue.search_toggle);
+                    break;
+                }
+            }
+            console.log(self.vue.searched_users);
+            // console.log(self.vue.users);
+            // var user = self.vue.users.filter(is_user_name(self.vue.search_temp));
+            // console.log(user);
+            if(!user_found)
+            {
+                self.vue.search_exists = false;
+            } else
+            {
+                self.vue.search_exists = true;
+            }
+            // console.log(self.vue.search_exists);
+        }
+        // var user = self.vue.users.filter(is_user_name(self.vue.search_temp));
+        // console.log(enrollments);
+        // var enrollments = self.vue.enrollments.filter(is_course_name(self.vue.search_temp));
+        // if(enrollments.length==0)
+        // {
+        //     self.vue.search_exists = false;
+        // } else
+        // {
+        //     self.vue.search_exists = true;
+        // }
     };
 
     self.vue = new Vue({
@@ -123,14 +179,16 @@ var app = function() {
             search_term: null,
             search_toggle: false,
             search_temp: null,
-            search_exists: false
+            search_exists: false,
+            searched_users: [],
+            user_search: false,
+            class_search: false
         },
         methods: {
             is_elem: is_elem,
             auth_user_current_enrollments: self.auth_user_current_enrollments,
             users_currently_enrolled: self.users_currently_enrolled,
             users_past_enrolled: self.users_past_enrolled,
-
             is_transcript_loaded: self.is_transcript_loaded,
             search: self.search,
             click_course: self.click_course,

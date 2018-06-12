@@ -89,6 +89,9 @@ var is_user_id = function(user_id) {
 var is_not_user_id = function(user_id) {
     return function(elem) { return elem.user_id != user_id; };
 };
+var is_user_name = function(first_name) {
+    return function(elem) { return elem.first_name = first_name; };
+};
 var is_quarter = function(quarter) {
     return function(elem) { return elem.quarter == quarter; };
 };
