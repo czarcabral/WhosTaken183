@@ -89,7 +89,7 @@ var app = function() {
 
     self.search = function()
     {
-        console.log(self.vue.users[1].first_name);
+        console.log(self.vue.users);
         if(!self.vue.search_toggle)
         {
             self.vue.search_toggle = !self.vue.search_toggle;
@@ -136,7 +136,6 @@ var app = function() {
                     self.vue.searched_users.push(self.vue.users[i]);
                     self.vue.user_search_id = self.vue.users[i].id;
                     // console.log(self.vue.search_toggle);
-                    break;
                 }
             }
             console.log(self.vue.searched_users);
@@ -152,16 +151,6 @@ var app = function() {
             }
             // console.log(self.vue.search_exists);
         }
-        // var user = self.vue.users.filter(is_user_name(self.vue.search_temp));
-        // console.log(enrollments);
-        // var enrollments = self.vue.enrollments.filter(is_course_name(self.vue.search_temp));
-        // if(enrollments.length==0)
-        // {
-        //     self.vue.search_exists = false;
-        // } else
-        // {
-        //     self.vue.search_exists = true;
-        // }
     };
 
     self.vue = new Vue({
