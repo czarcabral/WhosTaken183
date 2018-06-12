@@ -8,7 +8,8 @@ var app = function() {
             get_auth_user(get_auth_user_url), 
             get_users(get_users_url), 
             get_enrollments(get_enrollments_url), 
-            get_courses(get_courses_url)
+            get_courses(get_courses_url),
+            get_users2(users_url)
         ).done(function(response1, response2, response3, response4) { // note: if more than one param, use response[0].users else response.users
             self.vue.auth_user = response1[0].auth_user;
             self.vue.users = response2[0].users;
@@ -171,7 +172,8 @@ var app = function() {
             search_exists: false,
             searched_users: [],
             user_search: false,
-            class_search: false
+            class_search: false,
+            users_all: []
         },
         methods: {
             is_elem: is_elem,

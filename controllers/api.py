@@ -25,6 +25,7 @@ def get_profile_user():
     return response.json(dict(profile_user=profile_user))
 
 def get_users():
+    # print("HI FROM USERS")
     users = db(db.auth_user.is_public==True).select(
         db.auth_user.id, 
         db.auth_user.first_name, 
@@ -181,7 +182,7 @@ def get_messages():
     ))
 
 def get_users2():
-    # print("HI")
+    print("HI FROM USERS2")
     start_idx=int(request.vars.start_idx) if request.vars.start_idx is not None else 0
     end_idx=int(request.vars.end_idx) if request.vars.end_idx is not None else 0
     users_all = []

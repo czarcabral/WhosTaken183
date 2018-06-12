@@ -14,6 +14,12 @@ var get_users = function(get_users_url) {
         alert('ERROR - getJSON request (get_users_url) failed');
     });
 };
+
+var get_users2 = function(users_url) {
+    return $.getJSON(users_url).fail(function() {
+        alert('ERROR - getJSON request (users_url) failed');
+    });
+};
 var get_enrollments = function(get_enrollments_url) {
     return $.getJSON(get_enrollments_url).fail(function() {
         alert('ERROR - getJSON request (get_enrollments_url) failed');
